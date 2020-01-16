@@ -1,0 +1,55 @@
+language: android
+dist: trusty
+
+env:
+  matrix:
+    - BUILD_TOOLS=27.0.3 ANDROID_API=24 ANDROID_ABI=armeabi-v7a
+
+android:
+  components:
+    # Uncomment the lines below if you want to
+    # use the latest revision of Android SDK Tools
+    # - tools
+    # - platform-tools
+
+    # The BuildTools version used by your project
+    - build-tools-$BUILD_TOOLS
+
+    # The SDK version used to compile your project
+    - android-$ANDROID_API
+
+    # Additional components
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+    # Specify at least one system image,
+    # if you need to run emulator(s) during your tests
+    - sys-img-$ANDROID_ABI-android-$ANDROID_API
+
+before_install:
+  - yes | sdkmanager "platforms;android-27"
+    
+# Emulator Management: Create, Start and Wait
+before_script:
+  - echo no | android create avd --force -n test -t android-$ANDROID_API --abi $ANDROID_ABI -c 100M
+  - emulator -avd test -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+# Build script
+script:
+  - ./gradlew clean installDebug
+  - ./gradlew check
+  - ./gradlew testDebugUnitTest
+  - ./gradlew connectedDebugAndroidTest
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
