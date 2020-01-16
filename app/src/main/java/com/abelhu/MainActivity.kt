@@ -26,11 +26,14 @@ class MainActivity : AppCompatActivity() {
                 37 -> SlideAdapter.TYPE_1
                 in 0..1 -> SlideAdapter.TYPE_2
                 in 18..20 -> SlideAdapter.TYPE_3
-                in 46 .. 51 -> SlideAdapter.TYPE_6
+                in 46..51 -> SlideAdapter.TYPE_6
                 in 56..58 -> SlideAdapter.TYPE_3
                 else -> SlideAdapter.TYPE_4
             }
         }
+        // 设置PagerSnap保证滑动对齐
         PagerSnapHelper().attachToRecyclerView(recyclerView)
+        // 设置recyclerView的indicator
+        indicator.attachToRecyclerView(recyclerView)
     }
 }

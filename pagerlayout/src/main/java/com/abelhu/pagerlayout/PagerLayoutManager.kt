@@ -4,15 +4,19 @@ import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.util.SparseIntArray
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import kotlin.math.max
 
+private interface LayoutCompleteListener {
+    fun onLayoutComplete(page: Int)
+}
 
 class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLookup: (position: Int) -> Int = { _ -> 12 }) : RecyclerView.LayoutManager(),
-    RecyclerView.SmoothScroller.ScrollVectorProvider {
+        RecyclerView.SmoothScroller.ScrollVectorProvider {
     /**
      * 记录滚动的距离
      */
@@ -29,88 +33,101 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
      * 记录所有child的frame，用于判断frame是否位于可显示区域
      */
     var frames = arrayListOf<VisibleRect>()
+    /**
+     * 监听所有的child布局完成
+     */
+    private var onLayoutCompleteListener: LayoutCompleteListener? = null
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        Log.i("PagerLayoutManager", "onLayoutChildren with itemCount:$itemCount")
         // 如果没有children，不进行布局
         if (itemCount <= 0 || state.isPreLayout) return
-        // 排除所有已经布置完成的children后剩余的空间
-        var remainWidth = width
-        var remainHeight = height
-        // 记录每一层child的最大高度
-        var maxHeight = 0
-        // 记录总共需要多少页
-        var page = 0
-        // 计算每一个child的frame
-        frames.clear()
-        for (position in 0 until itemCount) {
-            // 获取child的宽度（因为是横向滑动，所以宽度是根据span计算而来
-            val childWidth = spanSizeLookup.invoke(position) * width / spanCount
-            // 获取child的高度，如果有缓存，就直接使用缓存的数据（这里认为span相同的child高度也相同）
+        // 如果没有itemCount的变化就不在重新计算frames
+        if (frames.size != itemCount) {
+            // 排除所有已经布置完成的children后剩余的空间
+            var remainWidth = width
+            var remainHeight = height
+            // 记录每一层child的最大高度
+            var maxHeight = 0
+            // 记录总共需要多少页
+            var page = 0
+            // 计算每一个child的frame
+            frames.clear()
+            for (position in 0 until itemCount) {
+                // 获取child的宽度（因为是横向滑动，所以宽度是根据span计算而来
+                val childWidth = spanSizeLookup.invoke(position) * width / spanCount
+                // 获取child的高度，如果有缓存，就直接使用缓存的数据（这里认为span相同的child高度也相同）
 
-            val childHeight = if (spanHeight[childWidth, Int.MIN_VALUE] != Int.MIN_VALUE) {
-                spanHeight[childWidth]
-            } else {
-                // 获取child
-                val child = recycler.getViewForPosition(position)
-                // 根据spanSizeLookup动态分配child的宽度
-                assignSpans(child, position)
-                // 测量child的宽高
-                measureChildWithMargins(child, 0, 0)
-                // 缓存child的高度
-                spanHeight.put(childWidth, getDecoratedMeasuredHeight(child))
-                // 缓存此child
-                removeAndRecycleView(child, recycler)
-                // 返回child的高度
-                spanHeight[childWidth]
-            }
-            // 判断水平方向是否有足够的空间给此child使用
-            if (remainWidth >= childWidth) {
-                // 保存此child的frame
-                frames.add(VisibleRect().apply {
-                    left = page * width + width - remainWidth.toFloat()
-                    top = height - remainHeight.toFloat()
-                    right = left + childWidth
-                    bottom = top + childHeight
-                    this.page = page
-                })
-                // 计算本层使用的最大高度
-                maxHeight = max(maxHeight, childHeight)
-                // 更新剩余空间的可用宽度
-                remainWidth -= childWidth
-            } else {
-                // 空间不够，尝试向下申请空间， 首先计算剩余空间的高度
-                remainHeight -= maxHeight
-                // 剩余空间的高度不足以放下child，开启新的一页，用以放置child
-                if (remainHeight < childHeight) {
-                    // 剩余空间的高度不足以放下child，开启新的一页，用以放置child
-                    page += 1
-                    // 重置可用宽高
-                    remainHeight = height
-                    // 最大滚动区域加一个屏幕宽度
-                    maxScrollDistance += width
+                val childHeight = if (spanHeight[childWidth, Int.MIN_VALUE] != Int.MIN_VALUE) {
+                    spanHeight[childWidth]
+                } else {
+                    // 获取child
+                    val child = recycler.getViewForPosition(position)
+                    // 根据spanSizeLookup动态分配child的宽度
+                    assignSpans(child, position)
+                    // 测量child的宽高
+                    measureChildWithMargins(child, 0, 0)
+                    // 缓存child的高度
+                    spanHeight.put(childWidth, getDecoratedMeasuredHeight(child))
+                    // 缓存此child
+                    removeAndRecycleView(child, recycler)
+                    // 返回child的高度
+                    spanHeight[childWidth]
                 }
-                // 重置剩余空间的宽度
-                remainWidth = width
-                // 保存此child的frame
-                frames.add(VisibleRect().apply {
-                    left = page * width + width - remainWidth.toFloat()
-                    top = height - remainHeight.toFloat()
-                    right = left + childWidth
-                    bottom = top + childHeight
-                    this.page = page
-                })
-                // 计算本层使用的最大高度，因为是新使用的一层，所以从0开始计算
-                maxHeight = max(0, childHeight)
-                // 更新剩余空间的可用宽度
-                remainWidth -= childWidth
+                // 判断水平方向是否有足够的空间给此child使用
+                if (remainWidth >= childWidth) {
+                    // 保存此child的frame
+                    frames.add(VisibleRect().apply {
+                        left = page * width + width - remainWidth.toFloat()
+                        top = height - remainHeight.toFloat()
+                        right = left + childWidth
+                        bottom = top + childHeight
+                        this.page = page
+                    })
+                    // 计算本层使用的最大高度
+                    maxHeight = max(maxHeight, childHeight)
+                    // 更新剩余空间的可用宽度
+                    remainWidth -= childWidth
+                } else {
+                    // 空间不够，尝试向下申请空间， 首先计算剩余空间的高度
+                    remainHeight -= maxHeight
+                    // 剩余空间的高度不足以放下child，开启新的一页，用以放置child
+                    if (remainHeight < childHeight) {
+                        // 剩余空间的高度不足以放下child，开启新的一页，用以放置child
+                        page += 1
+                        // 重置可用宽高
+                        remainHeight = height
+                        // 最大滚动区域加一个屏幕宽度
+                        maxScrollDistance += width
+                    }
+                    // 重置剩余空间的宽度
+                    remainWidth = width
+                    // 保存此child的frame
+                    frames.add(VisibleRect().apply {
+                        left = page * width + width - remainWidth.toFloat()
+                        top = height - remainHeight.toFloat()
+                        right = left + childWidth
+                        bottom = top + childHeight
+                        this.page = page
+                    })
+                    // 计算本层使用的最大高度，因为是新使用的一层，所以从0开始计算
+                    maxHeight = max(0, childHeight)
+                    // 更新剩余空间的可用宽度
+                    remainWidth -= childWidth
+                }
             }
         }
         // 填充所有可见的child
         fill(recycler, state)
+    }
+
+    override fun onLayoutCompleted(state: RecyclerView.State?) {
+        super.onLayoutCompleted(state)
+        onLayoutCompleteListener?.onLayoutComplete(frames.last().page)
     }
 
     override fun canScrollHorizontally(): Boolean {
@@ -142,6 +159,15 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
         val frame = frames[targetPosition]
         // 如果目标frame在可见区域，不需要,否则，计算frame左边距和当前滚动距离的差值
         return if (frame.visible) PointF(0f, 0f) else PointF(frame.left - scrollDistance, 0f)
+    }
+
+    fun onLayoutComplete(listener: (page: Int) -> Unit) {
+        onLayoutCompleteListener = object : LayoutCompleteListener {
+            override fun onLayoutComplete(page: Int) {
+                Log.i("PagerLayoutManager", "onLayoutComplete with pages: $page")
+                listener.invoke(page)
+            }
+        }
     }
 
     /**
