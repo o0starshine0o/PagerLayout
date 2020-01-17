@@ -13,4 +13,9 @@
     <declare-styleable name="LinePageIndicator">
         <attr name="round" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="DrawablePageIndicator">
+        <attr name="normal" format="reference" />
+        <attr name="select" format="reference" />
+    </declare-styleable>
 </resources>

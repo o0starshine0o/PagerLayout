@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.RectF
 import android.util.AttributeSet
+import kotlin.math.min
 
 @SuppressLint("CustomViewStyleable")
 class LinePageIndicator @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : PageIndicator(context, attrs, defStyleAttr) {
@@ -15,20 +16,24 @@ class LinePageIndicator @JvmOverloads constructor(context: Context, attrs: Attri
     private var indicatorHeight = 20f
     private var isRound = false
 
-     init {
+    init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PageIndicator)
         indicatorWidth = typedArray.getDimension(R.styleable.PageIndicator_indicatorWidth, indicatorWidth)
         indicatorHeight = typedArray.getDimension(R.styleable.PageIndicator_indicatorHeight, indicatorHeight)
         normalColor = typedArray.getColor(R.styleable.PageIndicator_normalColor, normalColor)
         selectColor = typedArray.getColor(R.styleable.PageIndicator_selectColor, selectColor)
-        isRound = typedArray.getBoolean(R.styleable.LinePageIndicator_round, isRound)
         typedArray.recycle()
+        val lineTypedArray = context.obtainStyledAttributes(attrs, R.styleable.LinePageIndicator)
+        isRound = lineTypedArray.getBoolean(R.styleable.LinePageIndicator_round, isRound)
+        lineTypedArray.recycle()
     }
 
     override fun drawNormal(canvas: Canvas, centerX: Float, centerY: Float) {
         paint.color = normalColor
         if (isRound) {
-            paint.apply { canvas.drawRoundRect(getRect(centerX, centerY), Float.MAX_VALUE, Float.MAX_VALUE, this) }
+            val rect = getRect(centerX, centerY)
+            val radio = min(rect.width(), rect.height()) / 2
+            paint.apply { canvas.drawRoundRect(getRect(centerX, centerY), radio, radio, this) }
         } else {
             paint.apply { canvas.drawRect(getRect(centerX, centerY), this) }
         }
@@ -37,7 +42,9 @@ class LinePageIndicator @JvmOverloads constructor(context: Context, attrs: Attri
     override fun drawSelect(canvas: Canvas, centerX: Float, centerY: Float) {
         paint.color = selectColor
         if (isRound) {
-            paint.apply { canvas.drawRoundRect(getRect(centerX, centerY), Float.MAX_VALUE, Float.MAX_VALUE, this) }
+            val rect = getRect(centerX, centerY)
+            val radio = min(rect.width(), rect.height()) / 2
+            paint.apply { canvas.drawRoundRect(getRect(centerX, centerY), radio, radio, this) }
         } else {
             paint.apply { canvas.drawRect(getRect(centerX, centerY), this) }
         }

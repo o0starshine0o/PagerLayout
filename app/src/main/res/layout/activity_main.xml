@@ -10,7 +10,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/lineIndicator"
+        app:layout_constraintBottom_toTopOf="@id/drawIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,6 +18,20 @@
         tools:layoutManager="android.support.v7.widget.GridLayoutManager"
         tools:listitem="@layout/item_icon"
         tools:spanCount="6" />
+
+    <com.abelhu.pagerlayout.DrawablePageIndicator
+        android:id="@+id/drawIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimaryDark"
+        android:padding="2dp"
+        app:indicatorHeight="20dp"
+        app:indicatorWidth="20dp"
+        app:layout_constraintBottom_toTopOf="@id/lineIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:normal="@drawable/ic_launcher_background"
+        app:select="@drawable/ic_launcher_foreground" />
 
     <com.abelhu.pagerlayout.LinePageIndicator
         android:id="@+id/lineIndicator"
@@ -27,6 +41,21 @@
         android:padding="2dp"
         app:indicatorHeight="8dp"
         app:indicatorWidth="20dp"
+        app:layout_constraintBottom_toTopOf="@id/lineIndicator2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:normalColor="@android:color/background_light"
+        app:selectColor="@android:color/background_dark" />
+
+    <com.abelhu.pagerlayout.LinePageIndicator
+        android:id="@+id/lineIndicator2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimaryDark"
+        android:padding="2dp"
+        app:indicatorHeight="8dp"
+        app:indicatorWidth="20dp"
+        app:round="true"
         app:layout_constraintBottom_toTopOf="@id/dotIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

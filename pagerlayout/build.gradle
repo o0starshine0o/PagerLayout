@@ -11,6 +11,7 @@ android {
         targetSdkVersion 27
         versionCode 100
         versionName "1.0.0"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {

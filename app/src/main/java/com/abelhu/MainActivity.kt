@@ -36,5 +36,7 @@ class MainActivity : AppCompatActivity() {
         // 设置recyclerView的indicator
         dotIndicator.attachToRecyclerView(recyclerView)
         lineIndicator.attachToRecyclerView(recyclerView)
+        lineIndicator2.attachToRecyclerView(recyclerView)
+        drawIndicator.attachToRecyclerView(recyclerView)
     }
 }
