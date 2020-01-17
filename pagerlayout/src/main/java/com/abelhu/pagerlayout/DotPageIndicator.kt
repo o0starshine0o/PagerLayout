@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.util.AttributeSet
+import kotlin.math.max
 import kotlin.math.min
 
 class DotPageIndicator @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : PageIndicator(context, attrs, defStyleAttr) {
@@ -22,13 +23,15 @@ class DotPageIndicator @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     override fun drawNormal(canvas: Canvas, centerX: Float, centerY: Float) {
+        val padding = max((paddingBottom + paddingTop) / 2, (paddingLeft + paddingRight) / 2)
         paint.color = normalColor
-        paint.apply { canvas.drawCircle(centerX, centerY, min(measuredWidth, measuredHeight).toFloat() / 2, this) }
+        paint.apply { canvas.drawCircle(centerX, centerY, min(indicatorWidth, indicatorHeight) / 2 - padding, this) }
     }
 
     override fun drawSelect(canvas: Canvas, centerX: Float, centerY: Float) {
+        val padding = max((paddingBottom + paddingTop) / 2, (paddingLeft + paddingRight) / 2)
         paint.color = selectColor
-        paint.apply { canvas.drawCircle(centerX, centerY, min(measuredWidth, measuredHeight).toFloat() / 2, this) }
+        paint.apply { canvas.drawCircle(centerX, centerY, min(indicatorWidth, indicatorHeight) / 2 - padding, this) }
     }
 
     override fun indicatorWidth() = indicatorWidth

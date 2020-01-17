@@ -23,13 +23,14 @@
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:indicatorHeight="30dp"
-        app:indicatorWidth="30dp"
+        android:background="@color/colorPrimaryDark"
+        android:padding="2dp"
+        app:indicatorHeight="12dp"
+        app:indicatorWidth="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:normalColor="@android:color/background_light"
-        app:selectColor="@android:color/background_dark"
-        android:background="@color/colorPrimaryDark"/>
+        app:selectColor="@android:color/background_dark" />
 
 </android.support.constraint.ConstraintLayout>
