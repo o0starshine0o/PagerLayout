@@ -30,9 +30,9 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
 
     /**
      * 根据indicatorSize计算出精确的宽高
+     * 目前只强制设置高度，宽度只支持match_parent
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        empty = (MeasureSpec.getSize(widthMeasureSpec) - totalPage * indicatorWidth().toInt()) / 2
         val widthMeasure = MeasureSpec.makeMeasureSpec(totalPage * indicatorWidth().toInt(), MeasureSpec.EXACTLY)
         val heightMeasure = MeasureSpec.makeMeasureSpec(indicatorHeight().toInt(), MeasureSpec.EXACTLY)
         setMeasuredDimension(widthMeasureSpec, heightMeasure)
@@ -42,7 +42,11 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        // 计算两边留白
+        empty = (measuredWidth - totalPage * indicatorWidth().toInt()) / 2
+        // 绘制正常情况的indicator
         drawNormal(canvas)
+        // 绘制选中情况额indicator
         drawSelect(canvas)
     }
 
@@ -50,7 +54,9 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
         // 保存recycleView的宽度用于计算
         recyclerView.post { pageWidth = recyclerView.layoutManager.width }
         // 当PagerLayoutManager的frames计算完成便获取了所有的page，这里添加回调进行保存
-        (recyclerView.layoutManager as? PagerLayoutManager)?.onLayoutComplete { totalPage = it }
+        (recyclerView.layoutManager as? PagerLayoutManager)?.onLayoutComplete {
+            totalPage = it
+        }
         // 设置滑动监听，动态绘制选中的Indicator
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {

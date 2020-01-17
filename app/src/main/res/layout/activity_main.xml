@@ -23,10 +23,9 @@
         android:id="@+id/drawIndicator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
-        android:padding="2dp"
-        app:indicatorHeight="20dp"
-        app:indicatorWidth="20dp"
+        android:padding="4dp"
+        app:indicatorHeight="26dp"
+        app:indicatorWidth="26dp"
         app:layout_constraintBottom_toTopOf="@id/lineIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,21 +36,19 @@
         android:id="@+id/lineIndicator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
-        android:padding="2dp"
+        android:padding="8dp"
         app:indicatorHeight="8dp"
-        app:indicatorWidth="20dp"
+        app:indicatorWidth="24dp"
         app:layout_constraintBottom_toTopOf="@id/lineIndicator2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:normalColor="@android:color/background_light"
-        app:selectColor="@android:color/background_dark" />
+        app:normalColor="@android:color/holo_blue_light"
+        app:selectColor="@android:color/holo_orange_light" />
 
     <com.abelhu.pagerlayout.LinePageIndicator
         android:id="@+id/lineIndicator2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
         android:padding="2dp"
         app:indicatorHeight="8dp"
         app:indicatorWidth="20dp"
@@ -59,21 +56,20 @@
         app:layout_constraintBottom_toTopOf="@id/dotIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:normalColor="@android:color/background_light"
-        app:selectColor="@android:color/background_dark" />
+        app:normalColor="@android:color/holo_blue_light"
+        app:selectColor="@android:color/holo_orange_light" />
 
     <com.abelhu.pagerlayout.DotPageIndicator
         android:id="@+id/dotIndicator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
         android:padding="2dp"
         app:indicatorHeight="12dp"
         app:indicatorWidth="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:normalColor="@android:color/background_light"
-        app:selectColor="@android:color/background_dark" />
+        app:normalColor="@android:color/holo_blue_light"
+        app:selectColor="@android:color/holo_orange_light" />
 
 </android.support.constraint.ConstraintLayout>
