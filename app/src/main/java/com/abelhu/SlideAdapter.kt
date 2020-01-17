@@ -1,15 +1,17 @@
 package com.abelhu
 
-import android.graphics.Color
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import kotlinx.android.synthetic.main.item_icon.view.*
-import java.util.*
 
-class SlideAdapter : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
+class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
+    private var iconList: MutableList<Int>
+
     companion object {
         private val TAG = SlideAdapter::class.simpleName
         const val TYPE_6 = 2
@@ -17,6 +19,12 @@ class SlideAdapter : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
         const val TYPE_3 = 4
         const val TYPE_2 = 6
         const val TYPE_1 = 12
+    }
+
+    init {
+        val typedArray = context.resources.obtainTypedArray(R.array.icon_list)
+        iconList = MutableList(typedArray.length()) { i -> typedArray.getResourceId(i, -1) }
+        typedArray.recycle()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideHolder {
@@ -41,7 +49,7 @@ class SlideAdapter : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
 
     override fun onBindViewHolder(holder: SlideHolder, position: Int) {
         Log.i(TAG, "onBindViewHolder with position: $position")
-        holder.initHolder(position)
+        holder.initHolder(position, iconList[position % iconList.size])
     }
 
     override fun onViewRecycled(holder: SlideHolder) {
@@ -51,9 +59,10 @@ class SlideAdapter : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
 
     class SlideHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private var index = 0
-        fun initHolder(position: Int) {
+        fun initHolder(position: Int, resourceId: Int) {
             index = position
-            itemView.iconView.setBackgroundColor(Color.rgb(Random().nextInt(256), Random().nextInt(256), Random().nextInt(256)))
+//            itemView.iconView.setBackgroundColor(Color.rgb(Random().nextInt(256), Random().nextInt(256), Random().nextInt(256)))
+            (itemView.iconView as ImageView).setImageResource(resourceId)
             itemView.nameView.text = position.toString()
             itemView.tag = position
             Log.i(TAG, "init holder: $position")

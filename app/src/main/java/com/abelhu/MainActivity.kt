@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        recyclerView.adapter = SlideAdapter()
+        recyclerView.adapter = SlideAdapter(baseContext)
         // 离屏缓存，并不会放入回收池，在反向滑动的时候保证item**不会**经过onBindViewHolder过程直接显示出来
         recyclerView.setItemViewCacheSize(0)
         // 根据每屏最多显示的item数量，设置其缓存阈值
