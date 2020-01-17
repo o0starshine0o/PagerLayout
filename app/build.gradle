@@ -9,8 +9,8 @@ android {
         applicationId "com.abelhu.pager"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 100
-        versionName "1.0.0"
+        versionCode PROJ_VERSION_CODE.toInteger()
+        versionName PROJ_VERSION
     }
     buildTypes {
         release {
@@ -21,7 +21,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
