@@ -37,7 +37,7 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
     /**
      * 监听所有的child布局完成
      */
-    private var onLayoutCompleteListener: LayoutCompleteListener? = null
+    private var onLayoutCompleteListener: MutableList<LayoutCompleteListener> = ArrayList(0)
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -127,8 +127,7 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State?) {
-        super.onLayoutCompleted(state)
-        onLayoutCompleteListener?.onLayoutComplete(frames.last().page)
+        for (listener in onLayoutCompleteListener) listener.onLayoutComplete(frames.last().page)
     }
 
     override fun canScrollHorizontally(): Boolean {
@@ -163,12 +162,12 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
     }
 
     fun onLayoutComplete(listener: (page: Int) -> Unit) {
-        onLayoutCompleteListener = object : LayoutCompleteListener {
+        onLayoutCompleteListener.add(object : LayoutCompleteListener {
             override fun onLayoutComplete(page: Int) {
-                Log.i("PagerLayoutManager", "onLayoutComplete with pages: $page")
                 listener.invoke(page)
+                Log.i("PagerLayoutManager", "onLayoutComplete with pages: $page")
             }
-        }
+        })
     }
 
     /**

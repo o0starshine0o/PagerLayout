@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="PageIndicator">
-    </declare-styleable>
-
-    <declare-styleable name="DotPageIndicator">
         <attr name="indicatorWidth" format="dimension"/>
         <attr name="indicatorHeight" format="dimension"/>
         <attr name="normalColor" format="color"/>
         <attr name="selectColor" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="DotPageIndicator">
+    </declare-styleable>
+
+    <declare-styleable name="LinePageIndicator">
+        <attr name="round" format="boolean"/>
     </declare-styleable>
 </resources>

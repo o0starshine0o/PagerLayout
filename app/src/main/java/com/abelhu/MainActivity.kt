@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         // 设置PagerSnap保证滑动对齐
         PagerSnapHelper().attachToRecyclerView(recyclerView)
         // 设置recyclerView的indicator
-        indicator.attachToRecyclerView(recyclerView)
+        dotIndicator.attachToRecyclerView(recyclerView)
+        lineIndicator.attachToRecyclerView(recyclerView)
     }
 }
