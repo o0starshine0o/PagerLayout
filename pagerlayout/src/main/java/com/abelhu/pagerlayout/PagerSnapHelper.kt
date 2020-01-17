@@ -20,10 +20,12 @@ class PagerSnapHelper : SnapHelper() {
     }
 
     override fun findTargetSnapPosition(layoutManager: RecyclerView.LayoutManager, velocityX: Int, velocityY: Int): Int {
+        var position = 0
         if (layoutManager is PagerLayoutManager) {
-            return if (velocityX > 0) layoutManager.nextPageItemPosition() else layoutManager.prePageItemPosition()
+            position =  if (velocityX > 0) layoutManager.nextPageItemPosition() else layoutManager.prePageItemPosition()
         }
-        return 0
+        Log.i("PagerSnapHelper", "findTargetSnapPosition: $position")
+        return position
     }
 
     /**
@@ -46,8 +48,8 @@ class PagerSnapHelper : SnapHelper() {
             if (distance < minDistance) {
                 minDistance = distance
                 minChildIndex = i
+                Log.i("PagerSnapHelper", "findSnapView[$i] with start:$start")
             }
-            Log.i("PagerSnapHelper", "findSnapView[$i] with start:$start")
         }
         // 获取这个child位于哪一个page
         var page = 0

@@ -48,9 +48,7 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
 
     fun attachToRecyclerView(recyclerView: RecyclerView) {
         // 保存recycleView的宽度用于计算
-        recyclerView.post {
-            pageWidth = recyclerView.layoutManager.width
-        }
+        recyclerView.post { pageWidth = recyclerView.layoutManager.width }
         // 当PagerLayoutManager的frames计算完成便获取了所有的page，这里添加回调进行保存
         (recyclerView.layoutManager as? PagerLayoutManager)?.onLayoutComplete { totalPage = it }
         // 设置滑动监听，动态绘制选中的Indicator
@@ -58,7 +56,6 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 scrollDistance += dx
                 postInvalidate()
-                Log.i("PageIndicator", "scrollDistance: $scrollDistance")
             }
         })
     }

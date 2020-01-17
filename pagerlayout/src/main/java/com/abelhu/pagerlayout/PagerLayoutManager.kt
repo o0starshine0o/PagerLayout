@@ -11,12 +11,13 @@ import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import kotlin.math.max
 
-private interface LayoutCompleteListener {
-    fun onLayoutComplete(page: Int)
-}
-
 class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLookup: (position: Int) -> Int = { _ -> 12 }) : RecyclerView.LayoutManager(),
         RecyclerView.SmoothScroller.ScrollVectorProvider {
+
+    private interface LayoutCompleteListener {
+        fun onLayoutComplete(page: Int)
+    }
+
     /**
      * 记录滚动的距离
      */
@@ -172,11 +173,11 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
 
     /**
      * 获取下一页的第一个item
+     * 如果已经到达了最后一页，停留在这个位置
      */
     fun nextPageItemPosition(): Int {
-        for ((i, frame) in frames.withIndex()) {
-            if (frame.page == scrollDistance / width + 1) return i
-        }
+        val page = if (scrollDistance == maxScrollDistance) frames.last().page else scrollDistance / width + 1
+        for ((i, frame) in frames.withIndex()) if (frame.page == page) return i
         return 0
     }
 
@@ -185,9 +186,7 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
      * 这里scrollDistance会比静止情况下下，所以就不在scrollDistance / width - 1了
      */
     fun prePageItemPosition(): Int {
-        for ((i, frame) in frames.withIndex()) {
-            if (frame.page == scrollDistance / width) return i
-        }
+        for ((i, frame) in frames.withIndex()) if (frame.page == scrollDistance / width) return i
         return 0
     }
 
