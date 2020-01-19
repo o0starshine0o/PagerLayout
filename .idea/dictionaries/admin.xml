@@ -2,6 +2,8 @@
   <dictionary name="admin">
     <words>
       <w>abelhu</w>
+      <w>itemlock</w>
+      <w>lockitem</w>
       <w>pagerlayout</w>
       <w>qicodes</w>
     </words>

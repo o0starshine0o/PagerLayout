@@ -8,8 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/LockItem" />
+            <option value="$PROJECT_DIR$/PagerLayout" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/pagerlayout" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -82,7 +82,7 @@ abstract class PageIndicator @JvmOverloads constructor(context: Context, attrs: 
         }
         // 绘制indicatorBitmap
         indicatorBitmap?.also { canvas.drawBitmap(it, 0f, 0f, paint) }
-        // 回复图层
+        // 恢复图层
         canvas.restoreToCount(normalLayer)
     }
 

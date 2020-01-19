@@ -1,32 +1,37 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-
 android {
     compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+
     defaultConfig {
-        applicationId "com.abelhu.pager"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode PROJ_VERSION_CODE.toInteger()
         versionName PROJ_VERSION
+        vectorDrawables.useSupportLibrary = true
     }
+
     buildTypes {
+        debug{
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
         }
     }
 }
 
+apply from: 'bintray.gradle'
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.2.0"
-    // 翻页网格布局，本地或者网络库
-    implementation project(path: ':PagerLayout')
-//    implementation 'com.github.qicodes:pagerlayout:1.0.0'
 }

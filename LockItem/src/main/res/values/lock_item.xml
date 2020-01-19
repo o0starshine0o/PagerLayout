@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LockItem">
+        <attr name="lockColor" format="color" />
+        <attr name="lock" format="reference" />
+        <attr name="lockWidth" format="dimension" />
+        <attr name="lockHeight" format="dimension" />
+        <attr name="lockText" format="string|reference" />
+        <attr name="lockTextColor" format="color" />
+        <attr name="lockTextSize" format="dimension" />
+        <attr name="lockTextMargin" format="dimension" />
+    </declare-styleable>
+</resources>
