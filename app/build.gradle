@@ -31,9 +31,9 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     // 翻页网格布局，本地或者网络库
-    implementation project(path: ':PagerLayout')
+    implementation project(path: ':PagerLayout', configuration: 'default')
     //    implementation 'com.github.qicodes:pagerlayout:1.0.0'
     // 带锁的item
-    implementation project(path: ':LockItem')
+    implementation project(path: ':LockItem', configuration: 'default')
     //    implementation 'com.github.qicodes:lockitem:1.0.0'
 }
