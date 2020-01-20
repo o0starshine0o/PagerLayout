@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.abelhu.lockitem.LockItem
 import kotlinx.android.synthetic.main.item_icon.view.*
 
 class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
@@ -29,7 +30,7 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideHolder {
         Log.i(TAG, "onCreateViewHolder with type: $viewType")
-        return SlideHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_icon, parent, false))
+        return SlideHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_lock, parent, false))
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -61,9 +62,23 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         private var index = 0
         fun initHolder(position: Int, resourceId: Int) {
             index = position
-//            itemView.iconView.setBackgroundColor(Color.rgb(Random().nextInt(256), Random().nextInt(256), Random().nextInt(256)))
-            (itemView.iconView as ImageView).setImageResource(resourceId)
+            val lockItem = itemView.iconView as LockItem
             itemView.nameView.text = position.toString()
+            lockItem.setImageResource(resourceId)
+            if (position % 2 == 0) {
+                lockItem.showLock = true
+                if (position % 4 == 0) {
+                    lockItem.showNumber = true
+                    lockItem.dotNumber = position
+                } else {
+                    lockItem.showNumber = false
+                    lockItem.dotNumber = position
+                }
+            } else {
+                lockItem.showNumber = false
+                lockItem.dotNumber = -1
+                lockItem.showLock = false
+            }
             itemView.tag = position
             Log.i(TAG, "init holder: $position")
         }

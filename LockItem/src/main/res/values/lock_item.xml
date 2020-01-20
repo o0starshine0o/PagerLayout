@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LockItem">
-        <attr name="lockColor" format="color" />
+        <attr name="lockBackgroundColor" format="color" />
         <attr name="lock" format="reference" />
+        <attr name="showLock" format="boolean" />
         <attr name="lockWidth" format="dimension" />
         <attr name="lockHeight" format="dimension" />
         <attr name="lockText" format="string|reference" />
         <attr name="lockTextColor" format="color" />
         <attr name="lockTextSize" format="dimension" />
         <attr name="lockTextMargin" format="dimension" />
+        <attr name="cornerSize" format="dimension" />
+        <attr name="dotBigRadio" format="dimension" />
+        <attr name="dotNormalRadio" format="dimension" />
+        <attr name="showNumber" format="boolean" />
+        <attr name="dotNumber" format="integer" />
+        <attr name="dotColor" format="color" />
+        <attr name="dotTextSize" format="dimension" />
+        <attr name="dotBackgroundColor" format="color" />
+        <attr name="dotBackgroundRadio" format="dimension" />
     </declare-styleable>
 </resources>

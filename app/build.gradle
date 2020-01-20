@@ -29,4 +29,6 @@ dependencies {
     // 翻页网格布局，本地或者网络库
     implementation project(path: ':PagerLayout')
 //    implementation 'com.github.qicodes:pagerlayout:1.0.0'
+    // 带锁的item
+    implementation project(path: ':LockItem')
 }
