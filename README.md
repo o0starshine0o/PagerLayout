@@ -12,18 +12,23 @@ what we can do...
 * reduce memory using by cache all items
 * grid layout support
 * custom indicator drawable support
+* add lock, dot and corner for each item 
 
 # Quick View
 
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/drawable.gif)
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/icon.gif)
+![https://github.com/o0starshine0o/PagerLayout](screenCaptures/lock_dot.gif)
 # Install
 Please using latest version:
 
 0. pagerlayout:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
+1. lockitem:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
 ```xml
 // 翻页网格布局，本地或者网络库
 implementation 'com.github.qicodes:pagerlayout:1.0.0'
+// 加锁红点item（如果需要加锁或者红点可以添加）
+implementation 'com.github.qicodes:lockitem:1.0.0'
 ```
 
 # How To Use
@@ -52,6 +57,7 @@ lineIndicator.attachToRecyclerView(recyclerView)
 lineIndicator2.attachToRecyclerView(recyclerView)
 drawIndicator.attachToRecyclerView(recyclerView)
 ```
+5. if you need your item in `RecyclerView` with lock or dot, you can implementation `lockitem`,and control the value with xml define in [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/LockItem/src/main/res/layout/item_lock.xml) or java/kotlin code [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/java/com/abelhu/SlideAdapter.kt)
 
 # What's More
 
@@ -99,6 +105,45 @@ app:round="true"
 ```
 For detail config, here is a [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/res/layout/activity_main.xml) for you.
 
+## Lock && Dot
+Each item can be covered with lock and dot, and the number in dot, here is a [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/java/com/abelhu/SlideAdapter.kt)
+```kotlin
+lockItem.showNumber = false
+lockItem.dotNumber = -1
+lockItem.showLock = false
+```
+Also, you can control this with xml:
+```xml
+<com.abelhu.lockitem.LockItem
+    android:id="@+id/iconView"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:padding="8dp"
+    android:src="@color/colorAccent"
+    app:cornerSize="8dp"
+    app:dotBackgroundColor="@android:color/white"
+    app:dotBackgroundRadio="0.5dp"
+    app:dotBigRadio="8dp"
+    app:dotNormalRadio="4dp"
+    app:dotNumber="88"
+    app:dotTextSize="12sp"
+    app:layout_constraintDimensionRatio="w, 1:1"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:lock="@mipmap/icon_lock"
+    app:lockBackgroundColor="#aa000000"
+    app:lockHeight="23.5dp"
+    app:lockText="@string/app_name"
+    app:lockTextColor="@android:color/white"
+    app:lockTextMargin="8dp"
+    app:lockTextSize="12sp"
+    app:lockWidth="21dp"
+    app:showLock="true"
+    app:showNumber="true"
+    app:srcCompat="@drawable/ic_launcher_foreground"
+    tools:ignore="ContentDescription" />
+```
 
 # Demo
 This project can be run if download.
