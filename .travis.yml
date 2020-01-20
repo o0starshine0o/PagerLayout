@@ -40,7 +40,7 @@ before_script:
 
 # Build script
 script:
-  - ./gradlew clean installDebug --stacktrace --debug
+  - ./gradlew clean installDebug --scan
   - ./gradlew check
   - ./gradlew testDebugUnitTest
   - ./gradlew connectedDebugAndroidTest
