@@ -33,7 +33,6 @@
         app:lockWidth="21dp"
         app:showLock="true"
         app:showNumber="true"
-        app:srcCompat="@drawable/ic_launcher_foreground"
         tools:ignore="ContentDescription" />
 
     <TextView

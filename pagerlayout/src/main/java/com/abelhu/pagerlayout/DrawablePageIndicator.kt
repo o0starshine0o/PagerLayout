@@ -21,8 +21,10 @@ class DrawablePageIndicator @JvmOverloads constructor(context: Context, attrs: A
         indicatorHeight = typedArray.getDimension(R.styleable.PageIndicator_indicatorHeight, indicatorHeight)
         typedArray.recycle()
         val drawableTypedArray = context.obtainStyledAttributes(attrs, R.styleable.DrawablePageIndicator)
-        normal = AppCompatResources.getDrawable(context, drawableTypedArray.getResourceId(R.styleable.DrawablePageIndicator_normal, -1))
-        select = AppCompatResources.getDrawable(context, drawableTypedArray.getResourceId(R.styleable.DrawablePageIndicator_select, -1))
+        val normalRes = drawableTypedArray.getResourceId(R.styleable.DrawablePageIndicator_normal, -1)
+        if (normalRes > 0) normal = AppCompatResources.getDrawable(context, normalRes)
+        val selectRes = drawableTypedArray.getResourceId(R.styleable.DrawablePageIndicator_select, -1)
+        if (selectRes > 0) select = AppCompatResources.getDrawable(context, selectRes)
         drawableTypedArray.recycle()
     }
 
