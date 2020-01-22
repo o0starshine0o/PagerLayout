@@ -127,7 +127,7 @@ class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLo
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State?) {
-        for (listener in onLayoutCompleteListener) listener.onLayoutComplete(frames.last().page)
+        for (listener in onLayoutCompleteListener) listener.onLayoutComplete(if (frames.size > 0) frames.last().page else 0)
     }
 
     override fun canScrollHorizontally(): Boolean {
