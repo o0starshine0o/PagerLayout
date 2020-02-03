@@ -147,9 +147,3 @@ Also, you can control this with xml:
 
 # Demo
 This project can be run if download.
-
-# Donate
-If this Weight helps you , I'll happy if you notify me by donate:
-
-![https://github.com/o0starshine0o/PagerLayout](screenCaptures/AliReceive.jpg)
-![https://github.com/o0starshine0o/PagerLayout](screenCaptures/WechatReceive.jpg)

@@ -6,14 +6,25 @@
     android:layout_height="match_parent"
     tools:context="com.abelhu.MainActivity">
 
+
+    <com.abelhu.smoothlayout.ForbidTouchMoveRecycleView
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_color" />
+
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/icons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/drawIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/banner"
         tools:itemCount="200"
         tools:layoutManager="android.support.v7.widget.GridLayoutManager"
         tools:listitem="@layout/item_icon"
@@ -52,11 +63,11 @@
         android:padding="2dp"
         app:indicatorHeight="8dp"
         app:indicatorWidth="20dp"
-        app:round="true"
         app:layout_constraintBottom_toTopOf="@id/dotIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:normalColor="@android:color/holo_blue_light"
+        app:round="true"
         app:selectColor="@android:color/holo_orange_light" />
 
     <com.abelhu.pagerlayout.DotPageIndicator
