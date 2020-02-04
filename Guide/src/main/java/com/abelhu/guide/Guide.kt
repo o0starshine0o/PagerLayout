@@ -7,8 +7,10 @@ import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.abelhu.guide.Guide.LayoutParams.Companion.TYPE_STAY
 import com.abelhu.guide.Guide.LayoutParams.Companion.TYPE_WINDOW
 import java.util.*
@@ -18,6 +20,7 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         private val Tag = Guide::class.java.simpleName
     }
 
+    var touchDismiss = true
     /**
      * 画笔
      */
@@ -30,11 +33,21 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      * 缓存背景
      */
     private var backgroundBitmap: Bitmap? = null
-
     /**
      * 除去必要的空间，此控件内的子控件都需要移除
      */
     private val removeList = LinkedList<View>()
+
+    fun addWindow(view: View): Guide {
+        windows.add(Window(view, intArrayOf(0, 0)))
+        return this
+    }
+
+    fun dismiss() {
+        val parent = parent as ViewGroup
+        parent.removeView(this)
+        parent.postInvalidate()
+    }
 
     init {
         // 获取定义属性
@@ -48,6 +61,10 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         paint.color = Color.WHITE
         // 回收
         typedArray.recycle()
+        // 设置默认遮罩颜色
+        if (background == null) background = ColorDrawable(Color.argb(127, 0, 0, 0))
+        // 设置布局铺满父控件
+        layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
     }
 
     override fun generateLayoutParams(attrs: AttributeSet): ConstraintLayout.LayoutParams {
@@ -114,7 +131,15 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         canvas.restoreToCount(layer)
     }
 
-    class Window(view: View, private val location: IntArray) {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        // 窗口区域不拦截，可以直接点击
+        for (window in windows) {
+            if (RectF(window.left, window.top, window.left + window.view.width, window.top + window.view.height).contains(event.x, event.y)) return false
+        }
+        return super.onTouchEvent(event)
+    }
+
+    class Window(val view: View, private val location: IntArray) {
         var bitmap: Bitmap? = null
         val left
             get() = location[0].toFloat()

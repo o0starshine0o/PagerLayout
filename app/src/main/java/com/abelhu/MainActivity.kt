@@ -5,6 +5,9 @@ import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.Toast
+import com.abelhu.guide.Guide
 import com.abelhu.pagerlayout.PagerLayoutManager
 import com.abelhu.pagerlayout.PagerSnapHelper
 import com.abelhu.smoothlayout.SmoothLinearLayoutManager
@@ -23,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         initBanner()
         initIcons()
+        initGuide()
     }
 
     private fun initBanner() {
@@ -64,6 +68,17 @@ class MainActivity : AppCompatActivity() {
         lineIndicator.attachToRecyclerView(icons)
         lineIndicator2.attachToRecyclerView(icons)
         drawIndicator.attachToRecyclerView(icons)
+    }
+
+    private fun initGuide() {
+        icons.post {
+            val guide = Guide(baseContext).addWindow(icons.findViewHolderForAdapterPosition(0).itemView)
+            guide.setOnClickListener {
+                Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
+                guide.dismiss()
+            }
+            (window.decorView as ViewGroup).addView(guide)
+        }
     }
 
     private fun flipBanner() {

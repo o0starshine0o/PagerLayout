@@ -7,24 +7,24 @@
     android:background="#80000000">
 
     <View
-        android:id="@+id/left"
+        android:id="@+id/top"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="20dp"
         android:background="@android:color/black"
-        app:layout_constraintEnd_toStartOf="@id/right"
+        app:layout_constraintEnd_toStartOf="@id/bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_type="window" />
 
     <View
-        android:id="@+id/right"
+        android:id="@+id/bottom"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="20dp"
         android:background="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/left"
+        app:layout_constraintStart_toEndOf="@id/top"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_type="window" />
 

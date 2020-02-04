@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.abelhu.lockitem.LockItem
 import kotlinx.android.synthetic.main.item_icon.view.*
 
@@ -80,6 +81,7 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
             }
             itemView.tag = position
             Log.i(TAG, "init holder: $position")
+            itemView.setOnClickListener { Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show() }
         }
 
         fun recycleHolder() = index

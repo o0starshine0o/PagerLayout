@@ -8,8 +8,7 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 
 class SmoothLinearLayoutManager @JvmOverloads constructor(
-    context: Context, val smooth: Float = 300f, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
+    context: Context, val smooth: Float = 300f, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0
 ) : LinearLayoutManager(context, attrs, defStyleAttr, defStyleRes) {
     override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State?, position: Int) {
         val scroll = object : LinearSmoothScroller(recyclerView.context) {
