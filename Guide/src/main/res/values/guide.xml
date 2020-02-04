@@ -4,6 +4,10 @@
         <attr name="dd" format="boolean" />
     </declare-styleable>
     <declare-styleable name="Guide_Layout">
-        <attr name="layout_touchWindow" format="boolean" />
+        <attr name="layout_type">
+            <enum name="other" value="0" />
+            <enum name="window" value="1" />
+            <enum name="stay" value="2" />
+        </attr>
     </declare-styleable>
 </resources>
