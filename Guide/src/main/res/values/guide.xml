@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Guide">
+        <attr name="dd" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Guide_Layout">
+        <attr name="layout_touchWindow" format="boolean" />
+    </declare-styleable>
+</resources>

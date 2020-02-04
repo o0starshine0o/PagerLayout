@@ -1,2 +1,2 @@
-include ':app', ':PagerLayout', ':LockItem'
+include ':app', ':PagerLayout', ':LockItem', ':Guide'
 rootProject.name='Pager'

@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         banner.setItemViewCacheSize(0)
         // 设置平滑滚动的LinearLayoutManager
         banner.layoutManager = SmoothLinearLayoutManager(baseContext)
+        // 设置PagerSnap保证滑动对齐
+        android.support.v7.widget.PagerSnapHelper().attachToRecyclerView(banner)
         // 开启自动翻页功能
         flipBanner()
     }
