@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="guide" type="id" />
     <declare-styleable name="Guide">
         <attr name="dd" format="boolean" />
     </declare-styleable>

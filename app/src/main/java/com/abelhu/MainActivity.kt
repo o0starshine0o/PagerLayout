@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         initBanner()
         initIcons()
-        initGuide()
+        showGuide()
     }
 
     private fun initBanner() {
@@ -70,12 +70,29 @@ class MainActivity : AppCompatActivity() {
         drawIndicator.attachToRecyclerView(icons)
     }
 
-    private fun initGuide() {
+    private fun showGuide(@Guide.Window.Companion.POSITION position: Int = Guide.Window.BOTTOM) {
         icons.post {
-            val guide = Guide(baseContext).addWindow(icons.findViewHolderForAdapterPosition(0).itemView)
+            val itemIndex = when (position) {
+                Guide.Window.LEFT -> 1
+                Guide.Window.TOP -> 3
+                Guide.Window.RIGHT -> 0
+                else -> 4
+            }
+            val itemView = icons.findViewHolderForAdapterPosition(itemIndex).itemView
+            val guide = when (position) {
+                Guide.Window.LEFT -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_left, 100, position)
+                Guide.Window.TOP -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_top, 100, position)
+                Guide.Window.RIGHT -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_right, -100, position)
+                else -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_bottom, -100, position)
+            }
             guide.setOnClickListener {
                 Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
                 guide.dismiss()
+                when (position) {
+                    Guide.Window.BOTTOM -> showGuide(Guide.Window.LEFT)
+                    Guide.Window.LEFT -> showGuide(Guide.Window.TOP)
+                    Guide.Window.TOP -> showGuide(Guide.Window.RIGHT)
+                }
             }
             (window.decorView as ViewGroup).addView(guide)
         }

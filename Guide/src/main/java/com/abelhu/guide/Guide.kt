@@ -4,16 +4,21 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
+import android.support.annotation.IntDef
+import android.support.annotation.LayoutRes
 import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintLayout.LayoutParams
+import android.support.constraint.Guideline
 import android.util.AttributeSet
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import com.abelhu.guide.Guide.LayoutParams.Companion.TYPE_STAY
-import com.abelhu.guide.Guide.LayoutParams.Companion.TYPE_WINDOW
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
     companion object {
@@ -33,13 +38,18 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      * 缓存背景
      */
     private var backgroundBitmap: Bitmap? = null
-    /**
-     * 除去必要的空间，此控件内的子控件都需要移除
-     */
-    private val removeList = LinkedList<View>()
 
-    fun addWindow(view: View): Guide {
-        windows.add(Window(view, intArrayOf(0, 0)))
+    fun addWindow(view: View, @LayoutRes help: Int, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM): Guide {
+        return addWindow(view, LayoutInflater.from(context).inflate(help, this, false), offset, position)
+    }
+
+    fun addWindow(view: View, help: View? = null, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM): Guide {
+        val window = Window(view, intArrayOf(0, 0, 0, 0), position, help, offset)
+        addView(window.mainGuideLine)
+        addView(window.crossGuideLine)
+        addView(window.help)
+        // 记录窗口，用于穿透区域绘制和点击判定
+        windows.add(window)
         return this
     }
 
@@ -62,9 +72,11 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         // 回收
         typedArray.recycle()
         // 设置默认遮罩颜色
-        if (background == null) background = ColorDrawable(Color.argb(127, 0, 0, 0))
+        if (background == null) background = ColorDrawable(Color.argb(191, 0, 0, 0))
         // 设置布局铺满父控件
         layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        // 设置此控件的id
+        id = R.id.guide
     }
 
     override fun generateLayoutParams(attrs: AttributeSet): ConstraintLayout.LayoutParams {
@@ -96,25 +108,6 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         drawBackWithWindow(canvas)
     }
 
-    @SuppressLint("DrawAllocation")
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        // 获取最后一个标记为touchWindow的child，设置其为window
-        for (i in 0 until childCount) {
-            val child = getChildAt(i)
-            when ((child.layoutParams as LayoutParams).type) {
-                TYPE_WINDOW -> {
-                    windows.add(Window(child, intArrayOf(0, 0)))
-                    removeList.add(child)
-                }
-                TYPE_STAY -> Log.i(Tag, "stay child")
-                else -> removeList.add(child)
-            }
-        }
-        // 移除所有要被移除的children
-        for (view in removeList) removeView(view)
-    }
-
     @Suppress("DEPRECATION")
     private fun drawBackWithWindow(canvas: Canvas) {
         // 获取图层
@@ -131,34 +124,171 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         canvas.restoreToCount(layer)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         // 窗口区域不拦截，可以直接点击
-        for (window in windows) {
-            if (RectF(window.left, window.top, window.left + window.view.width, window.top + window.view.height).contains(event.x, event.y)) return false
-        }
+        for (window in windows) if (RectF(window.left, window.top, window.right, window.bottom).contains(event.x, event.y)) return false
         return super.onTouchEvent(event)
     }
 
-    class Window(val view: View, private val location: IntArray) {
+    class Window(view: View, private val location: IntArray, @POSITION position: Int = BOTTOM, help: View? = null, offset: Int = 0) {
+        companion object {
+            @Retention(AnnotationRetention.SOURCE)
+            @IntDef(LEFT, TOP, RIGHT, BOTTOM)
+            annotation class POSITION
+
+            const val LEFT = 1
+            const val TOP = 2
+            const val RIGHT = 3
+            const val BOTTOM = 4
+        }
+
+        /**
+         * 要做差集运算，这边先缓存此bitmap
+         */
         var bitmap: Bitmap? = null
+        /**
+         * 主轴
+         */
+        var mainGuideLine: Guideline? = null
+        /**
+         * 交叉轴
+         */
+        var crossGuideLine: Guideline? = null
+        /**
+         * 显示提示文案的view
+         */
+        var help: View? = null
+
         val left
             get() = location[0].toFloat()
         val top
             get() = location[1].toFloat()
+        val right
+            get() = location[2].toFloat()
+        val bottom
+            get() = location[3].toFloat()
 
         init {
+            // 记录view的位置
             view.getLocationInWindow(location)
-            bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            location[2] = location[0] + view.width
+            location[3] = location[1] + view.height
+            // 绘制需要裁剪的图形
+            bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ALPHA_8)
+            // 根据position设置mainGuideLine和crossGuideLine
+            mainGuideLine = Guideline(view.context)
+            mainGuideLine?.id = generateViewId()
+            val mainGuideLayout = LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
+            mainGuideLayout.type = TYPE_STAY
+            crossGuideLine = Guideline(view.context)
+            crossGuideLine?.id = generateViewId()
+            val crossGuideLayout = LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
+            crossGuideLayout.type = TYPE_STAY
+            when (position) {
+                LEFT -> {
+                    mainGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
+                    mainGuideLayout.guideBegin = left.toInt() + offset
+                    mainGuideLayout.topToTop = R.id.guide
+                    mainGuideLayout.bottomToBottom = R.id.guide
+                    crossGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
+                    crossGuideLayout.guideBegin = ((top + bottom) / 2).toInt()
+                    crossGuideLayout.startToStart = R.id.guide
+                    crossGuideLayout.endToEnd = R.id.guide
+                }
+                TOP -> {
+                    mainGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
+                    mainGuideLayout.guideBegin = top.toInt() + offset
+                    mainGuideLayout.startToStart = R.id.guide
+                    mainGuideLayout.endToEnd = R.id.guide
+                    crossGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
+                    crossGuideLayout.guideBegin = ((left + right) / 2).toInt()
+                    crossGuideLayout.topToTop = R.id.guide
+                    crossGuideLayout.bottomToBottom = R.id.guide
+                }
+                RIGHT -> {
+                    mainGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
+                    mainGuideLayout.guideBegin = right.toInt() + offset
+                    mainGuideLayout.topToTop = R.id.guide
+                    mainGuideLayout.bottomToBottom = R.id.guide
+                    crossGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
+                    crossGuideLayout.guideBegin = ((top + bottom) / 2).toInt()
+                    crossGuideLayout.startToStart = R.id.guide
+                    crossGuideLayout.endToEnd = R.id.guide
+                }
+                BOTTOM -> {
+                    mainGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
+                    mainGuideLayout.guideBegin = bottom.toInt() + offset
+                    mainGuideLayout.startToStart = R.id.guide
+                    mainGuideLayout.endToEnd = R.id.guide
+                    crossGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
+                    crossGuideLayout.guideBegin = ((left + right) / 2).toInt()
+                    crossGuideLayout.topToTop = R.id.guide
+                    crossGuideLayout.bottomToBottom = R.id.guide
+                }
+            }
+            mainGuideLine?.layoutParams = mainGuideLayout
+            crossGuideLine?.layoutParams = crossGuideLayout
+            // 设置help的位置
+            val helpLayout = LayoutParams(help?.layoutParams ?: LayoutParams(WRAP_CONTENT, WRAP_CONTENT)).apply {
+                type = TYPE_STAY
+                when (position) {
+                    LEFT -> {
+                        endToStart = mainGuideLine?.id ?: R.id.guide
+                        topToTop = crossGuideLine?.id ?: R.id.guide
+                        bottomToBottom = crossGuideLine?.id ?: R.id.guide
+                    }
+                    TOP -> {
+                        bottomToTop = mainGuideLine?.id ?: R.id.guide
+                        startToStart = crossGuideLine?.id ?: R.id.guide
+                        endToEnd = crossGuideLine?.id ?: R.id.guide
+                    }
+                    RIGHT -> {
+                        startToEnd = mainGuideLine?.id ?: R.id.guide
+                        topToTop = crossGuideLine?.id ?: R.id.guide
+                        bottomToBottom = crossGuideLine?.id ?: R.id.guide
+                    }
+                    BOTTOM -> {
+                        topToBottom = mainGuideLine?.id ?: R.id.guide
+                        startToStart = crossGuideLine?.id ?: R.id.guide
+                        endToEnd = crossGuideLine?.id ?: R.id.guide
+                    }
+                }
+            }
+            help?.layoutParams = helpLayout
+            this.help = help
+        }
+
+        private fun generateViewId(): Int {
+            while (true) {
+                // 通过反射获取id生成器
+                val clazz = View::class.java
+                val field = clazz.getDeclaredField("sNextGeneratedId")
+                field.isAccessible = true
+                val nextGeneratedId = field.get(null) as AtomicInteger
+                val result: Int = nextGeneratedId.get()
+                // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+                var newValue = result + 1
+                if (newValue > 0x00FFFFFF) newValue = 1 // Roll over to 1, not 0.
+                if (nextGeneratedId.compareAndSet(result, newValue)) {
+                    return result
+                }
+            }
         }
     }
 
     class LayoutParams : ConstraintLayout.LayoutParams {
         companion object {
+            @Retention(AnnotationRetention.SOURCE)
+            @IntDef(TYPE_OTHER, TYPE_WINDOW, TYPE_STAY)
+            annotation class TYPE
+
             const val TYPE_OTHER = 0
             const val TYPE_WINDOW = 1
             const val TYPE_STAY = 2
         }
 
+        @TYPE
         var type = TYPE_OTHER
 
         constructor(source: ViewGroup.LayoutParams) : super(source)
