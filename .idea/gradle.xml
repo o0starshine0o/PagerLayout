@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/FolderView" />
             <option value="$PROJECT_DIR$/Guide" />
             <option value="$PROJECT_DIR$/LockItem" />
             <option value="$PROJECT_DIR$/NineDrawable" />

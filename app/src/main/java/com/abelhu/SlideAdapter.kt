@@ -1,6 +1,8 @@
 package com.abelhu
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.abelhu.folder.FolderView
 import com.abelhu.lockitem.LockItem
 import com.abelhu.nine.GridDrawable
 import kotlinx.android.synthetic.main.item_icon.view.*
@@ -66,32 +69,45 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         override fun generateResource(obj: Int) = AppCompatResources.getDrawable(itemView.context, obj)
 
         fun initHolder(position: Int, resourceId: Int) {
-            index = position
-            val lockItem = itemView.iconView as LockItem
-            itemView.nameView.text = position.toString()
-            when (index) {
-                3 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.TWO, 10, this).addRes(*Array(10) { resourceId }))
-                5 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.THREE, 10, this).addRes(*Array(10) { resourceId }))
-                7 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.FOUR, 10, this).addRes(*Array(10) { resourceId }))
-                else -> lockItem.setImageResource(resourceId)
-            }
-            if (position % 2 == 0) {
-                lockItem.showLock = true
-                if (position % 4 == 0) {
-                    lockItem.showNumber = true
-                    lockItem.dotNumber = position
-                } else {
-                    lockItem.showNumber = false
-                    lockItem.dotNumber = position
-                }
-            } else {
-                lockItem.showNumber = false
-                lockItem.dotNumber = -1
-                lockItem.showLock = false
-            }
-            itemView.tag = position
             Log.i(TAG, "init holder: $position")
-            itemView.setOnClickListener { Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show() }
+            index = position
+            itemView.tag = index
+            itemView.setOnClickListener {
+                when (index) {
+                    3 -> (itemView.rootView as ViewGroup).addView(
+                        FolderView(
+                            itemView.context,
+                            itemView.rootView,
+                            8f,
+                            itemView,
+                            View(itemView.context).apply { background = ColorDrawable(Color.RED) })
+                    )
+                    else -> Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show()
+                }
+            }
+            itemView.nameView.text = position.toString()
+            (itemView.iconView as LockItem).apply {
+                when (index) {
+                    3 -> setImageDrawable(GridDrawable(GridDrawable.TWO, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
+                    5 -> setImageDrawable(GridDrawable(GridDrawable.THREE, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
+                    7 -> setImageDrawable(GridDrawable(GridDrawable.FOUR, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
+                    else -> setImageResource(resourceId)
+                }
+                if (position % 2 == 0) {
+                    showLock = true
+                    if (position % 4 == 0) {
+                        showNumber = true
+                        dotNumber = position
+                    } else {
+                        showNumber = false
+                        dotNumber = position
+                    }
+                } else {
+                    showNumber = false
+                    dotNumber = -1
+                    showLock = false
+                }
+            }
         }
 
         fun recycleHolder() = index
