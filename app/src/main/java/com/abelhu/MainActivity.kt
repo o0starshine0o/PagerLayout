@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         initBanner()
         initIcons()
-        showGuide()
+//        showGuide()
     }
 
     private fun initBanner() {

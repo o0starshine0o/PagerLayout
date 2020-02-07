@@ -74,14 +74,13 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
             itemView.tag = index
             itemView.setOnClickListener {
                 when (index) {
-                    3 -> (itemView.rootView as ViewGroup).addView(
-                        FolderView(
-                            itemView.context,
-                            itemView.rootView,
-                            8f,
-                            itemView,
-                            View(itemView.context).apply { background = ColorDrawable(Color.RED) })
-                    )
+                    3 -> {
+                        // TODO 替换掉这个临时的view
+                        val targetView = View(itemView.context).apply { background = ColorDrawable(Color.RED) }
+                        val folder = FolderView(itemView.context, itemView.rootView, 8f, itemView.iconView, targetView)
+                        folder.post { folder.expend() }
+                        (itemView.rootView as ViewGroup).addView(folder)
+                    }
                     else -> Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show()
                 }
             }

@@ -1,8 +1,10 @@
 package com.abelhu.folder
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -11,21 +13,33 @@ import android.renderscript.ScriptIntrinsicBlur
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.Guideline
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 
-class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : ConstraintLayout(context, attrs, defStyle) {
 
-    var title: TextView? = null
+class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : ConstraintLayout(context, attrs, defStyle) {
+    companion object {
+        private val Tag = FolderView::class.java.simpleName
+    }
+
+    private var title: TextView? = null
     /**
      * 起始的itemView位置：left, top, right, bottom, width, height
      */
-    private val location = IntArray(6) { 0 }
+    private val shrinkRect = Rect()
+    /**
+     * 起始的itemView位置：left, top, right, bottom, width, height
+     */
+    private val expandRect = Rect()
+
     private var target: View? = null
 
-    constructor(context: Context, backView: View?, blurRadius: Float = 8f, itemView: View? = null, targetView: View? = null) : this(context) {
+    var expandMargin = -1f
+
+    constructor(context: Context, backView: View, blurRadius: Float = 8f, itemView: View? = null, targetView: View? = null) : this(context) {
         // 创建模糊背景的background
-        backView?.apply {
+        backView.apply {
             val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
             val tempBitmap = Bitmap.createBitmap(bitmap)
             val render = RenderScript.create(context)
@@ -39,27 +53,45 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             this@FolderView.background = BitmapDrawable(resources, tempBitmap)
         }
         // 获取itemView的位置信息
-        itemView?.getLocationInWindow(location)
-        location[4] = itemView?.measuredWidth ?: 0
-        location[5] = itemView?.measuredHeight ?: 0
-        location[2] = location[0] + location[4]
-        location[3] = location[1] + location[5]
-        // 记录targetView
-        target = targetView
+        intArrayOf(0, 0).also { itemView?.getLocationInWindow(it) }.also {
+            shrinkRect.apply {
+                left = it[0]
+                top = it[1]
+                right = left + (itemView?.measuredWidth ?: 0)
+                bottom = top + (itemView?.measuredHeight ?: 0)
+            }
+        }
+        // 计算展开后的位置
+        expandMargin = if (expandMargin < 0) backView.measuredWidth * 0.12f else expandMargin
+        expandRect.apply {
+            left = expandMargin.toInt()
+            top = ((backView.measuredHeight - (backView.measuredWidth - 2 * expandMargin)) / 2).toInt()
+            right = (backView.measuredWidth - expandMargin).toInt()
+            bottom = backView.measuredHeight - top
+        }
         // target
+        target = targetView
         target?.layoutParams = ((if (target?.layoutParams == null) generateDefaultLayoutParams() else LayoutParams(layoutParams)) as LayoutParams).apply {
-            width = location[4]
-            height = location[5]
-            leftMargin = location[0]
-            topMargin = location[1]
-            rightMargin = (background as BitmapDrawable).intrinsicWidth - location[2]
-            bottomMargin = (background as BitmapDrawable).intrinsicHeight - location[3]
+            startToStart = this@FolderView.id
+            endToEnd = this@FolderView.id
+            topToTop = this@FolderView.id
+            bottomToBottom = this@FolderView.id
+            width = shrinkRect.width()
+            height = shrinkRect.height()
+            leftMargin = shrinkRect.left
+            topMargin = shrinkRect.top
+            rightMargin = backView.measuredWidth - shrinkRect.right
+            bottomMargin = backView.measuredHeight - shrinkRect.bottom
         }
         addView(target)
     }
 
     init {
         id = generateViewId()
+        // 获取定义属性
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FolderView)
+        expandMargin = typedArray.getDimension(R.styleable.FolderView_expandMargin, expandMargin)
+        typedArray.recycle()
         // titleGuide
         val titleGuide = Guideline(context).apply {
             id = generateViewId()
@@ -92,7 +124,22 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 展开函数
      * 用于从某一固定位置展开target
      */
-    fun expend() {
-
+    fun expend(during: Long = 300) {
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = during
+            addUpdateListener { animation ->
+                val percent = animation.animatedValue as Float
+                (target?.layoutParams as LayoutParams).apply {
+                    width = ((expandRect.width() - shrinkRect.width()) * percent + shrinkRect.width()).toInt()
+                    height = ((expandRect.height() - shrinkRect.height()) * percent + shrinkRect.height()).toInt()
+                    leftMargin = (((expandRect.left - shrinkRect.left) * percent) + shrinkRect.left).toInt()
+                    topMargin = (((expandRect.top - shrinkRect.top) * percent) + shrinkRect.top).toInt()
+                    rightMargin = (this@FolderView.measuredWidth - ((expandRect.right - shrinkRect.right) * percent) - shrinkRect.right).toInt()
+                    bottomMargin = (this@FolderView.measuredHeight - ((expandRect.bottom - shrinkRect.bottom) * percent) - shrinkRect.bottom).toInt()
+                    Log.i(Tag, "($width, $height)[$leftMargin, $topMargin, $rightMargin, $bottomMargin]")
+                }
+                target?.requestLayout()
+            }
+        }.start()
     }
 }
