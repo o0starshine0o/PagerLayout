@@ -1,6 +1,7 @@
 package com.abelhu
 
 import android.content.Context
+import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.abelhu.lockitem.LockItem
+import com.abelhu.nine.GridDrawable
 import kotlinx.android.synthetic.main.item_icon.view.*
 
 class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
@@ -58,13 +60,21 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         Log.i(TAG, "onViewRecycled with position: ${holder.recycleHolder()}")
     }
 
-    class SlideHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SlideHolder(itemView: View) : RecyclerView.ViewHolder(itemView), GridDrawable.Generate<Int> {
         private var index = 0
+
+        override fun generateResource(obj: Int) = AppCompatResources.getDrawable(itemView.context, obj)
+
         fun initHolder(position: Int, resourceId: Int) {
             index = position
             val lockItem = itemView.iconView as LockItem
             itemView.nameView.text = position.toString()
-            lockItem.setImageResource(resourceId)
+            when (index) {
+                3 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.TWO, 10, this).addRes(*Array(10) { resourceId }))
+                5 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.THREE, 10, this).addRes(*Array(10) { resourceId }))
+                7 -> lockItem.setImageDrawable(GridDrawable(GridDrawable.FOUR, 10, this).addRes(*Array(10) { resourceId }))
+                else -> lockItem.setImageResource(resourceId)
+            }
             if (position % 2 == 0) {
                 lockItem.showLock = true
                 if (position % 4 == 0) {
@@ -85,5 +95,6 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         }
 
         fun recycleHolder() = index
+
     }
 }

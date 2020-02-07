@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="guide" type="id" />
+    <declare-styleable name="Guide">
+        <attr name="dd" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Guide_Layout">
+        <attr name="layout_type">
+            <enum name="other" value="0" />
+            <enum name="window" value="1" />
+            <enum name="stay" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

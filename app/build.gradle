@@ -42,4 +42,7 @@ dependencies {
     // 可点击的引导
     implementation project(path: ':Guide')
     //    implementation 'com.github.qicodes:guide:1.0.0'
+    // 九宫格drawable
+    implementation project(path: ':NineDrawable')
+    //    implementation 'com.github.qicodes:ninedrawable:1.0.0'
 }
