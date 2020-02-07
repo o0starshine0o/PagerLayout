@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/round_rect_black">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/icons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/dotIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:spanCount="3"
+        tools:itemCount="200"
+        tools:listitem="@layout/item_icon" />
+
+    <com.abelhu.pagerlayout.DotPageIndicator
+        android:id="@+id/dotIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="2dp"
+        app:indicatorHeight="12dp"
+        app:indicatorWidth="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:normalColor="@android:color/holo_blue_light"
+        app:selectColor="@android:color/holo_orange_light" />
+
+</android.support.constraint.ConstraintLayout>

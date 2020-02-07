@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initIcons() {
-        icons.adapter = SlideAdapter(baseContext)
+        icons.adapter = SlideAdapter(baseContext, icons.recycledViewPool)
         // 离屏缓存，并不会放入回收池，在反向滑动的时候保证item**不会**经过onBindViewHolder过程直接显示出来
         icons.setItemViewCacheSize(0)
         // 根据每屏最多显示的item数量，设置其缓存阈值

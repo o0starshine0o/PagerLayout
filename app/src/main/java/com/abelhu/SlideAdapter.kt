@@ -1,8 +1,6 @@
 package com.abelhu
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -13,9 +11,10 @@ import android.widget.Toast
 import com.abelhu.folder.FolderView
 import com.abelhu.lockitem.LockItem
 import com.abelhu.nine.GridDrawable
+import kotlinx.android.synthetic.main.folder.view.*
 import kotlinx.android.synthetic.main.item_icon.view.*
 
-class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
+class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.RecycledViewPool) : RecyclerView.Adapter<SlideAdapter.SlideHolder>() {
     private var iconList: MutableList<Int>
 
     companion object {
@@ -35,7 +34,7 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideHolder {
         Log.i(TAG, "onCreateViewHolder with type: $viewType")
-        return SlideHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_lock, parent, false))
+        return SlideHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_lock, parent, false), recycledViewPool)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -49,9 +48,7 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         }
     }
 
-    override fun getItemCount(): Int {
-        return 200
-    }
+    override fun getItemCount() = 200
 
     override fun onBindViewHolder(holder: SlideHolder, position: Int) {
         Log.i(TAG, "onBindViewHolder with position: $position")
@@ -63,10 +60,13 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
         Log.i(TAG, "onViewRecycled with position: ${holder.recycleHolder()}")
     }
 
-    class SlideHolder(itemView: View) : RecyclerView.ViewHolder(itemView), GridDrawable.Generate<Int> {
+    class SlideHolder(itemView: View, private val recycledViewPool: RecyclerView.RecycledViewPool) : RecyclerView.ViewHolder(itemView),
+        GridDrawable.Generate<Int> {
         private var index = 0
 
         override fun generateResource(obj: Int) = AppCompatResources.getDrawable(itemView.context, obj)
+
+        fun recycleHolder() = index
 
         fun initHolder(position: Int, resourceId: Int) {
             Log.i(TAG, "init holder: $position")
@@ -74,13 +74,7 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
             itemView.tag = index
             itemView.setOnClickListener {
                 when (index) {
-                    3 -> {
-                        // TODO 替换掉这个临时的view
-                        val targetView = View(itemView.context).apply { background = ColorDrawable(Color.RED) }
-                        val folder = FolderView(itemView.context, itemView.rootView, 8f, itemView.iconView, targetView)
-                        folder.post { folder.expend() }
-                        (itemView.rootView as ViewGroup).addView(folder)
-                    }
+                    3, 5, 7 -> createFolder(resourceId)
                     else -> Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -109,7 +103,21 @@ class SlideAdapter(context: Context) : RecyclerView.Adapter<SlideAdapter.SlideHo
             }
         }
 
-        fun recycleHolder() = index
+        private fun createFolder(resourceId: Int) {
+            // 设置文件夹的RecycleView
+            val targetView = LayoutInflater.from(itemView.context).inflate(R.layout.folder, itemView.rootView as ViewGroup, false)
+            targetView.icons.adapter = FolderAdapter(List(10) { resourceId })
+//            targetView.icons.layoutManager = PagerLayoutManager { TYPE_3 }
+            targetView.icons.setItemViewCacheSize(0)
+            // 因为item基本都是一样的，这里直接共用recycledViewPool
+            targetView.icons.recycledViewPool = recycledViewPool
+            // 设置recyclerView的indicator
+            targetView.dotIndicator.attachToRecyclerView(targetView.icons)
+            val folder = FolderView(itemView.context, itemView.rootView, 25f, itemView.iconView, targetView)
+            folder.post { folder.expend() }
+            folder.setOnClickListener { folder.shrink() }
+            (itemView.rootView as ViewGroup).addView(folder)
+        }
 
     }
 }

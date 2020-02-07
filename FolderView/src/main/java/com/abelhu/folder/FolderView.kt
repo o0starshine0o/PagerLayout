@@ -3,6 +3,7 @@ package com.abelhu.folder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
@@ -15,6 +16,7 @@ import android.support.constraint.Guideline
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 
 
@@ -35,12 +37,14 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private var target: View? = null
 
-    var expandMargin = -1f
+    private var expandMargin = -1f
 
-    constructor(context: Context, backView: View, blurRadius: Float = 8f, itemView: View? = null, targetView: View? = null) : this(context) {
+    constructor(context: Context, backView: View, blurRadius: Float = 25f, itemView: View? = null, targetView: View? = null) : this(context) {
         // 创建模糊背景的background
         backView.apply {
             val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            draw(canvas)
             val tempBitmap = Bitmap.createBitmap(bitmap)
             val render = RenderScript.create(context)
             val blur = ScriptIntrinsicBlur.create(render, Element.U8_4(render))
@@ -71,7 +75,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         }
         // target
         target = targetView
-        target?.layoutParams = ((if (target?.layoutParams == null) generateDefaultLayoutParams() else LayoutParams(layoutParams)) as LayoutParams).apply {
+        target?.layoutParams = generateDefaultLayoutParams().apply {
             startToStart = this@FolderView.id
             endToEnd = this@FolderView.id
             topToTop = this@FolderView.id
@@ -125,21 +129,34 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 用于从某一固定位置展开target
      */
     fun expend(during: Long = 300) {
-        ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = during
+        ValueAnimator.ofFloat(0f, 1f).setDuration(during).apply { addUpdateListener { animation -> updateTarget(animation) } }.start()
+    }
+
+    fun shrink(during: Long = 300) {
+        ValueAnimator.ofFloat(1f, 0f).setDuration(during).apply {
+            addUpdateListener { animation -> updateTarget(animation) }
             addUpdateListener { animation ->
-                val percent = animation.animatedValue as Float
-                (target?.layoutParams as LayoutParams).apply {
-                    width = ((expandRect.width() - shrinkRect.width()) * percent + shrinkRect.width()).toInt()
-                    height = ((expandRect.height() - shrinkRect.height()) * percent + shrinkRect.height()).toInt()
-                    leftMargin = (((expandRect.left - shrinkRect.left) * percent) + shrinkRect.left).toInt()
-                    topMargin = (((expandRect.top - shrinkRect.top) * percent) + shrinkRect.top).toInt()
-                    rightMargin = (this@FolderView.measuredWidth - ((expandRect.right - shrinkRect.right) * percent) - shrinkRect.right).toInt()
-                    bottomMargin = (this@FolderView.measuredHeight - ((expandRect.bottom - shrinkRect.bottom) * percent) - shrinkRect.bottom).toInt()
-                    Log.i(Tag, "($width, $height)[$leftMargin, $topMargin, $rightMargin, $bottomMargin]")
+                if ((animation.animatedValue as Float) < 0.0001 && parent != null) {
+                    (parent as ViewGroup).apply {
+                        removeView(this@FolderView)
+                        postInvalidate()
+                    }
                 }
-                target?.requestLayout()
             }
         }.start()
+    }
+
+    private fun updateTarget(animator: ValueAnimator) {
+        val percent = animator.animatedValue as Float
+        (target?.layoutParams as LayoutParams).apply {
+            width = ((expandRect.width() - shrinkRect.width()) * percent + shrinkRect.width()).toInt()
+            height = ((expandRect.height() - shrinkRect.height()) * percent + shrinkRect.height()).toInt()
+            leftMargin = (((expandRect.left - shrinkRect.left) * percent) + shrinkRect.left).toInt()
+            topMargin = (((expandRect.top - shrinkRect.top) * percent) + shrinkRect.top).toInt()
+            rightMargin = (this@FolderView.measuredWidth - ((expandRect.right - shrinkRect.right) * percent) - shrinkRect.right).toInt()
+            bottomMargin = (this@FolderView.measuredHeight - ((expandRect.bottom - shrinkRect.bottom) * percent) - shrinkRect.bottom).toInt()
+            Log.i(Tag, "($width, $height)[$leftMargin, $topMargin, $rightMargin, $bottomMargin]")
+        }
+        target?.requestLayout()
     }
 }
