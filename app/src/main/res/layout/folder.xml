@@ -4,26 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    android:background="@drawable/round_rect_black">
+    android:background="@drawable/round_rect_black"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="0dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/icons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        app:layoutManager="com.abelhu.pagerlayout.PagerLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/dotIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:spanCount="3"
-        tools:itemCount="200"
-        tools:listitem="@layout/item_icon" />
+        tools:itemCount="70"
+        tools:listitem="@layout/item_lock" />
 
     <com.abelhu.pagerlayout.DotPageIndicator
         android:id="@+id/dotIndicator"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="12dp"
+        android:layout_margin="4dp"
         android:padding="2dp"
         app:indicatorHeight="12dp"
         app:indicatorWidth="12dp"

@@ -11,8 +11,8 @@ import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import kotlin.math.max
 
-class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLookup: (position: Int) -> Int = { _ -> 12 }) : RecyclerView.LayoutManager(),
-        RecyclerView.SmoothScroller.ScrollVectorProvider {
+class PagerLayoutManager(private val spanCount: Int = 12, private val spanSizeLookup: (position: Int) -> Int = { _ -> 4 }) : RecyclerView.LayoutManager(),
+    RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     private interface LayoutCompleteListener {
         fun onLayoutComplete(page: Int)

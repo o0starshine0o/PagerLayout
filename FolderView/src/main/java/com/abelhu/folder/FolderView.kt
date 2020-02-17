@@ -66,7 +66,6 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             val render = RenderScript.create(context)
             val blur = ScriptIntrinsicBlur.create(render, Element.U8_4(render))
             var radius = blurRadius
-
             while (radius > 0.001f) {
                 val tempIn = Allocation.createFromBitmap(render, bitmap)
                 val tempOut = Allocation.createFromBitmap(render, tempBitmap)

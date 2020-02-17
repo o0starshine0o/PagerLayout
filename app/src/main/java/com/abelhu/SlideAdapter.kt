@@ -12,6 +12,7 @@ import com.abelhu.folder.FolderView
 import com.abelhu.lockitem.LockItem
 import com.abelhu.nine.GridDrawable
 import com.abelhu.pagerlayout.PagerLayoutManager
+import com.abelhu.pagerlayout.PagerSnapHelper
 import kotlinx.android.synthetic.main.folder.view.*
 import kotlinx.android.synthetic.main.item_icon.view.*
 
@@ -75,16 +76,18 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             itemView.tag = index
             itemView.setOnClickListener {
                 when (index) {
-                    3, 5, 7 -> createFolder(resourceId)
+                    3 -> createFolder(resourceId, GridDrawable.TWO)
+                    5 -> createFolder(resourceId, GridDrawable.THREE)
+                    7 -> createFolder(resourceId, GridDrawable.FOUR)
                     else -> Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show()
                 }
             }
             itemView.nameView.text = position.toString()
             (itemView.iconView as LockItem).apply {
                 when (index) {
-                    3 -> setImageDrawable(GridDrawable(GridDrawable.TWO, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
-                    5 -> setImageDrawable(GridDrawable(GridDrawable.THREE, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
-                    7 -> setImageDrawable(GridDrawable(GridDrawable.FOUR, 10, this@SlideHolder).addRes(*Array(10) { resourceId }))
+                    3 -> setImageDrawable(GridDrawable(GridDrawable.TWO, 10, this@SlideHolder).addRes(*Array(100) { resourceId }))
+                    5 -> setImageDrawable(GridDrawable(GridDrawable.THREE, 10, this@SlideHolder).addRes(*Array(100) { resourceId }))
+                    7 -> setImageDrawable(GridDrawable(GridDrawable.FOUR, 10, this@SlideHolder).addRes(*Array(100) { resourceId }))
                     else -> setImageResource(resourceId)
                 }
                 if (position % 2 == 0) {
@@ -104,14 +107,16 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             }
         }
 
-        private fun createFolder(resourceId: Int) {
+        private fun createFolder(resourceId: Int, grid: Int) {
             // 设置文件夹的RecycleView
             val targetView = LayoutInflater.from(itemView.context).inflate(R.layout.folder, itemView.rootView as ViewGroup, false)
-            targetView.icons.adapter = FolderAdapter(List(10) { resourceId })
-            targetView.icons.layoutManager = PagerLayoutManager { TYPE_3 }
+            targetView.icons.adapter = FolderAdapter(List(20) { resourceId })
+            targetView.icons.layoutManager = PagerLayoutManager { 12 / grid }
             targetView.icons.setItemViewCacheSize(0)
             // 因为item基本都是一样的，这里直接共用recycledViewPool
             targetView.icons.recycledViewPool = recycledViewPool
+            // 设置PagerSnap保证滑动对齐
+            PagerSnapHelper().attachToRecyclerView(targetView.icons)
             // 设置recyclerView的indicator
             targetView.dotIndicator.attachToRecyclerView(targetView.icons)
             val folder = FolderView(itemView.context, itemView.rootView, 25f, itemView.iconView, targetView)
