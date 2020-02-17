@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="0dp">
+    android:padding="4dp">
 
     <com.abelhu.lockitem.LockItem
         android:id="@+id/iconView"
@@ -40,7 +40,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="4dp"
+        android:padding="0dp"
         android:text="@string/app_name"
         android:textColor="@android:color/black"
         android:textSize="18sp"

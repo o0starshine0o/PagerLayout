@@ -31,30 +31,56 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      */
     private val shrinkRect = Rect()
     /**
-     * 起始的itemView位置：left, top, right, bottom, width, height
+     * 展开的itemView位置：left, top, right, bottom, width, height
      */
     private val expandRect = Rect()
+    /**
+     * 缩放的最小值
+     */
+    private var targetScale = 0f
 
+    /**
+     * 最终需要展示的view
+     */
     private var target: View? = null
-
+    /**
+     * target的边距
+     */
     private var expandMargin = -1f
 
-    constructor(context: Context, backView: View, blurRadius: Float = 25f, itemView: View? = null, targetView: View? = null) : this(context) {
+    /**
+     * @param context 上下文
+     * @param backView 用于创建模糊背景
+     * @param blurRadius 模糊背景的模糊半径
+     * @param itemView 用于计算FolderView缩小后的位置
+     * @param targetView 用于替换itemView， 最终展示在FolderView中的view
+     */
+    constructor(context: Context, backView: View, blurRadius: Float = 50f, itemView: View? = null, targetView: View? = null) : this(context) {
         // 创建模糊背景的background
         backView.apply {
-            val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+            val start = System.currentTimeMillis()
+            var bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+            val tempBitmap = Bitmap.createBitmap(bitmap)
             val canvas = Canvas(bitmap)
             draw(canvas)
-            val tempBitmap = Bitmap.createBitmap(bitmap)
             val render = RenderScript.create(context)
             val blur = ScriptIntrinsicBlur.create(render, Element.U8_4(render))
-            val tempIn = Allocation.createFromBitmap(render, bitmap)
-            val tempOut = Allocation.createFromBitmap(render, tempBitmap)
-            blur.setRadius(blurRadius)
-            blur.setInput(tempIn)
-            blur.forEach(tempOut)
-            tempOut.copyTo(tempBitmap)
-            this@FolderView.background = BitmapDrawable(resources, tempBitmap)
+            var radius = blurRadius
+
+            while (radius > 0.001f) {
+                val tempIn = Allocation.createFromBitmap(render, bitmap)
+                val tempOut = Allocation.createFromBitmap(render, tempBitmap)
+                val tempRadius = if (blurRadius > 25f) 25f else blurRadius
+                blur.setRadius(tempRadius)
+                blur.setInput(tempIn)
+                blur.forEach(tempOut)
+                tempOut.copyTo(tempBitmap)
+                bitmap = tempBitmap
+                radius -= tempRadius
+            }
+            this@FolderView.background = BitmapDrawable(resources, bitmap)
+            this@FolderView.background.alpha = 0
+            Log.i(Tag, "init background bitmap using time : ${System.currentTimeMillis() - start}")
         }
         // 获取itemView的位置信息
         intArrayOf(0, 0).also { itemView?.getLocationInWindow(it) }.also {
@@ -73,6 +99,8 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             right = (backView.measuredWidth - expandMargin).toInt()
             bottom = backView.measuredHeight - top
         }
+        // 计算缩放值
+        targetScale = shrinkRect.width().toFloat() / expandRect.width()
         // target
         target = targetView
         target?.layoutParams = generateDefaultLayoutParams().apply {
@@ -80,14 +108,9 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             endToEnd = this@FolderView.id
             topToTop = this@FolderView.id
             bottomToBottom = this@FolderView.id
-            width = shrinkRect.width()
-            height = shrinkRect.height()
-            leftMargin = shrinkRect.left
-            topMargin = shrinkRect.top
-            rightMargin = backView.measuredWidth - shrinkRect.right
-            bottomMargin = backView.measuredHeight - shrinkRect.bottom
+            width = expandRect.width()
+            height = expandRect.height()
         }
-        addView(target)
     }
 
     init {
@@ -129,34 +152,43 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 用于从某一固定位置展开target
      */
     fun expend(during: Long = 300) {
-        ValueAnimator.ofFloat(0f, 1f).setDuration(during).apply { addUpdateListener { animation -> updateTarget(animation) } }.start()
+        this.post {
+            this@FolderView.addView(target)
+            ValueAnimator.ofFloat(targetScale, 1f).setDuration(during).apply { addUpdateListener { animation -> updateTarget(animation) } }.start()
+        }
+
     }
 
+
+    /**
+     * 缩小函数
+     * 把target缩小到itemView
+     */
     fun shrink(during: Long = 300) {
-        ValueAnimator.ofFloat(1f, 0f).setDuration(during).apply {
-            addUpdateListener { animation -> updateTarget(animation) }
-            addUpdateListener { animation ->
-                if ((animation.animatedValue as Float) < 0.0001 && parent != null) {
-                    (parent as ViewGroup).apply {
-                        removeView(this@FolderView)
-                        postInvalidate()
+        this.post {
+            ValueAnimator.ofFloat(1f, targetScale).setDuration(during).apply {
+                addUpdateListener { animation -> updateTarget(animation) }
+                addUpdateListener { animation ->
+                    if ((animation.animatedValue as Float) <= targetScale + 0.0001 && parent != null) {
+                        (parent as ViewGroup).apply {
+                            removeView(this@FolderView)
+                            postInvalidate()
+                        }
                     }
                 }
-            }
-        }.start()
+            }.start()
+        }
     }
 
     private fun updateTarget(animator: ValueAnimator) {
         val percent = animator.animatedValue as Float
-        (target?.layoutParams as LayoutParams).apply {
-            width = ((expandRect.width() - shrinkRect.width()) * percent + shrinkRect.width()).toInt()
-            height = ((expandRect.height() - shrinkRect.height()) * percent + shrinkRect.height()).toInt()
-            leftMargin = (((expandRect.left - shrinkRect.left) * percent) + shrinkRect.left).toInt()
-            topMargin = (((expandRect.top - shrinkRect.top) * percent) + shrinkRect.top).toInt()
-            rightMargin = (this@FolderView.measuredWidth - ((expandRect.right - shrinkRect.right) * percent) - shrinkRect.right).toInt()
-            bottomMargin = (this@FolderView.measuredHeight - ((expandRect.bottom - shrinkRect.bottom) * percent) - shrinkRect.bottom).toInt()
-            Log.i(Tag, "($width, $height)[$leftMargin, $topMargin, $rightMargin, $bottomMargin]")
-        }
-        target?.requestLayout()
+        // 修改缩放值
+        target?.scaleX = percent
+        target?.scaleY = percent
+        // 修改移动值
+        target?.translationX = (shrinkRect.exactCenterX() - expandRect.exactCenterX()) * (percent - 1) / (targetScale - 1)
+        target?.translationY = (shrinkRect.exactCenterY() - expandRect.exactCenterY()) * (percent - 1) / (targetScale - 1)
+        // 修改透明度
+        this.background?.alpha = 255 - (255 * (percent - 1) / (targetScale - 1)).toInt()
     }
 }

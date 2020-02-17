@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.abelhu.folder.FolderView
 import com.abelhu.lockitem.LockItem
 import com.abelhu.nine.GridDrawable
+import com.abelhu.pagerlayout.PagerLayoutManager
 import kotlinx.android.synthetic.main.folder.view.*
 import kotlinx.android.synthetic.main.item_icon.view.*
 
@@ -107,16 +108,16 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             // 设置文件夹的RecycleView
             val targetView = LayoutInflater.from(itemView.context).inflate(R.layout.folder, itemView.rootView as ViewGroup, false)
             targetView.icons.adapter = FolderAdapter(List(10) { resourceId })
-//            targetView.icons.layoutManager = PagerLayoutManager { TYPE_3 }
+            targetView.icons.layoutManager = PagerLayoutManager { TYPE_3 }
             targetView.icons.setItemViewCacheSize(0)
             // 因为item基本都是一样的，这里直接共用recycledViewPool
             targetView.icons.recycledViewPool = recycledViewPool
             // 设置recyclerView的indicator
             targetView.dotIndicator.attachToRecyclerView(targetView.icons)
             val folder = FolderView(itemView.context, itemView.rootView, 25f, itemView.iconView, targetView)
-            folder.post { folder.expend() }
             folder.setOnClickListener { folder.shrink() }
             (itemView.rootView as ViewGroup).addView(folder)
+            folder.expend()
         }
 
     }
