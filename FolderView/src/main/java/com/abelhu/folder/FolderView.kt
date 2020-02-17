@@ -25,7 +25,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         private val Tag = FolderView::class.java.simpleName
     }
 
-    private var title: TextView? = null
+    var title: TextView? = null
     /**
      * 起始的itemView位置：left, top, right, bottom, width, height
      */
@@ -55,31 +55,34 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * @param itemView 用于计算FolderView缩小后的位置
      * @param targetView 用于替换itemView， 最终展示在FolderView中的view
      */
-    constructor(context: Context, backView: View, blurRadius: Float = 50f, itemView: View? = null, targetView: View? = null) : this(context) {
+    constructor(context: Context, backView: View, itemView: View? = null, targetView: View? = null, blurRadius: Float = 4f) : this(context) {
         // 创建模糊背景的background
         backView.apply {
             val start = System.currentTimeMillis()
-            var bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
-            val tempBitmap = Bitmap.createBitmap(bitmap)
+            // 获取背景
+            val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             draw(canvas)
+            canvas.drawColor(Color.argb(128, 0, 0, 0))
+            // 使用缩小的bitmap进行高斯模糊，加快渲染速度
+            val tempBitmap = Bitmap.createScaledBitmap(bitmap, measuredWidth.shr(4), measuredHeight.shr(4), false)
+            // 获取渲染脚本
             val render = RenderScript.create(context)
             val blur = ScriptIntrinsicBlur.create(render, Element.U8_4(render))
-            var radius = blurRadius
-            while (radius > 0.001f) {
-                val tempIn = Allocation.createFromBitmap(render, bitmap)
-                val tempOut = Allocation.createFromBitmap(render, tempBitmap)
-                val tempRadius = if (blurRadius > 25f) 25f else blurRadius
-                blur.setRadius(tempRadius)
-                blur.setInput(tempIn)
-                blur.forEach(tempOut)
-                tempOut.copyTo(tempBitmap)
-                bitmap = tempBitmap
-                radius -= tempRadius
-            }
-            this@FolderView.background = BitmapDrawable(resources, bitmap)
+            blur.setRadius(blurRadius)
+            // 设置入参和回参
+            val tempIn = Allocation.createFromBitmap(render, tempBitmap)
+            val tempOut = Allocation.createFromBitmap(render, tempBitmap)
+            blur.setInput(tempIn)
+            blur.forEach(tempOut)
+            // 设置最终图片
+            tempOut.copyTo(tempBitmap)
+            // 回收渲染脚本
+            render.destroy()
+            // 设置背景
+            this@FolderView.background = BitmapDrawable(resources, tempBitmap)
             this@FolderView.background.alpha = 0
-            Log.i(Tag, "init background bitmap using time : ${System.currentTimeMillis() - start}")
+            Log.i(Tag, "[${Thread.currentThread().name}] init background bitmap using time : ${System.currentTimeMillis() - start}")
         }
         // 获取itemView的位置信息
         intArrayOf(0, 0).also { itemView?.getLocationInWindow(it) }.also {
@@ -130,6 +133,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             guidePercent = 0.1f
         }
         addView(titleGuide)
+        Log.i(Tag, "add title guide")
         // title
         title = TextView(context).apply {
             id = View.generateViewId()
@@ -137,6 +141,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             textSize = 30f
         }
         title?.setTextColor(Color.WHITE)
+        title?.alpha = 0f
         (title?.layoutParams as LayoutParams).apply {
             orientation = LayoutParams.HORIZONTAL
             startToStart = this@FolderView.id
@@ -144,13 +149,14 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             topToBottom = titleGuide.id
         }
         addView(title)
+        Log.i(Tag, "add title")
     }
 
     /**
      * 展开函数
      * 用于从某一固定位置展开target
      */
-    fun expend(during: Long = 300) {
+    fun expend(during: Long = 200) {
         this.post {
             this@FolderView.addView(target)
             ValueAnimator.ofFloat(targetScale, 1f).setDuration(during).apply { addUpdateListener { animation -> updateTarget(animation) } }.start()
@@ -158,12 +164,11 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     }
 
-
     /**
      * 缩小函数
      * 把target缩小到itemView
      */
-    fun shrink(during: Long = 300) {
+    fun shrink(during: Long = 200) {
         this.post {
             ValueAnimator.ofFloat(1f, targetScale).setDuration(during).apply {
                 addUpdateListener { animation -> updateTarget(animation) }
@@ -187,7 +192,9 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         // 修改移动值
         target?.translationX = (shrinkRect.exactCenterX() - expandRect.exactCenterX()) * (percent - 1) / (targetScale - 1)
         target?.translationY = (shrinkRect.exactCenterY() - expandRect.exactCenterY()) * (percent - 1) / (targetScale - 1)
-        // 修改透明度
-        this.background?.alpha = 255 - (255 * (percent - 1) / (targetScale - 1)).toInt()
+        // 修改背景的透明度
+        background?.alpha = 255 - (255 * (percent - 1) / (targetScale - 1)).toInt()
+        // 修改title的透明度
+        title?.alpha = 1 - (percent - 1) / (targetScale - 1)
     }
 }

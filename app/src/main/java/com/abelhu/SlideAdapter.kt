@@ -1,5 +1,6 @@
 package com.abelhu
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
@@ -76,9 +77,9 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             itemView.tag = index
             itemView.setOnClickListener {
                 when (index) {
-                    3 -> createFolder(resourceId, GridDrawable.TWO)
-                    5 -> createFolder(resourceId, GridDrawable.THREE)
-                    7 -> createFolder(resourceId, GridDrawable.FOUR)
+                    3 -> createFolder(resourceId, GridDrawable.TWO, index)
+                    5 -> createFolder(resourceId, GridDrawable.THREE, index)
+                    7 -> createFolder(resourceId, GridDrawable.FOUR, index)
                     else -> Toast.makeText(itemView.context, "click item view:$position", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -107,7 +108,8 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             }
         }
 
-        private fun createFolder(resourceId: Int, grid: Int) {
+        @SuppressLint("SetTextI18n")
+        private fun createFolder(resourceId: Int, grid: Int, index: Int) {
             // 设置文件夹的RecycleView
             val targetView = LayoutInflater.from(itemView.context).inflate(R.layout.folder, itemView.rootView as ViewGroup, false)
             targetView.icons.adapter = FolderAdapter(List(20) { resourceId })
@@ -119,7 +121,8 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             PagerSnapHelper().attachToRecyclerView(targetView.icons)
             // 设置recyclerView的indicator
             targetView.dotIndicator.attachToRecyclerView(targetView.icons)
-            val folder = FolderView(itemView.context, itemView.rootView, 25f, itemView.iconView, targetView)
+            val folder = FolderView(itemView.context, itemView.rootView, itemView.iconView, targetView)
+            folder.title?.text = "Folder View $index"
             folder.setOnClickListener { folder.shrink() }
             (itemView.rootView as ViewGroup).addView(folder)
             folder.expend()
