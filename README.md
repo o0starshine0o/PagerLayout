@@ -1,7 +1,10 @@
+> combine PagerView + GridLayout to PagerLayout
+
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/logo_V2.jpg)
 
 ![Travis (.com)](https://img.shields.io/travis/com/o0starshine0o/PagerLayout)
 ![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
+[ ![Download](https://api.bintray.com/packages/beijingqicode/maven/PagerLayout/images/download.svg) ](https://bintray.com/beijingqicode/maven/PagerLayout/_latestVersion)
 ![GitHub](https://img.shields.io/github/license/o0starshine0o/PagerLayout)
 ![GitHub last commit](https://img.shields.io/github/last-commit/o0starshine0o/PagerLayout)
 
@@ -12,23 +15,36 @@ what we can do...
 * reduce memory using by cache all items
 * grid layout support
 * custom indicator drawable support
-* add lock, dot and corner for each item 
+* add lock, dot and corner for each item
+* add NineDrawable and FolderView for Folder Like Group just like iOS
+* add Guide View if you want to guide people how to use
 
 # Quick View
 
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/drawable.gif)
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/icon.gif)
-![https://github.com/o0starshine0o/PagerLayout](screenCaptures/lock_dot.gif)
+![https://github.com/o0starshine0o/PagerLayout/LockItem/](screenCaptures/lock_dot.png)
+![https://github.com/o0starshine0o/PagerLayout/Guide/](screenCaptures/guide.png)
+![https://github.com/o0starshine0o/PagerLayout/FolderView/](screenCaptures/folder.png)
 # Install
 Please using latest version:
 
-0. pagerlayout:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
-1. lockitem:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
+0. [PagerLayout](https://github.com/o0starshine0o/PagerLayout):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
+1. [LockItem](https://github.com/o0starshine0o/PagerLayout/LockItem/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
+2. [Guide](https://github.com/o0starshine0o/PagerLayout/Guide/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/guide)
+3. [FolderView](https://github.com/o0starshine0o/PagerLayout/FolderView/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/folderview)
+4. [NineDrawable](https://github.com/o0starshine0o/PagerLayout/NineDrawable/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/ninedrawable)
 ```
 // 翻页网格布局，本地或者网络库
 implementation 'com.github.qicodes:pagerlayout:1.0.0'
-// 加锁红点item（如果需要加锁或者红点可以添加）
+// 加锁红点item（可选：如果需要加锁或者红点可以添加）
 implementation 'com.github.qicodes:lockitem:1.0.0'
+// 新手引导，（可选：如果需要添加用户引导可以添加）
+implementation 'com.github.qicodes:guide:1.0.0'
+// iOS风格文件夹，（可选：如果需要添加类似iOS风格的文件夹效果可以添加）
+implementation 'com.github.qicodes:folderview:1.0.0'
+// 生成九宫格的drawable，（可选：如果需要添加类似iOS风格的文件夹效果可以添加）
+implementation 'com.github.qicodes:ninedrawable:1.0.0'
 ```
 
 # How To Use
@@ -57,8 +73,12 @@ lineIndicator.attachToRecyclerView(recyclerView)
 lineIndicator2.attachToRecyclerView(recyclerView)
 drawIndicator.attachToRecyclerView(recyclerView)
 ```
-5. if you need your item in `RecyclerView` with lock or dot, you can implementation `lockitem`,and control the value with xml define in [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/LockItem/src/main/res/layout/item_lock.xml) or java/kotlin code [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/java/com/abelhu/SlideAdapter.kt)
+5. if you need your item in `RecyclerView` with lock or dot, you can implementation `lockitem`, follow [this link to see LockItem](https://github.com/o0starshine0o/PagerLayout/LockItem/)
+,and control the value with xml define in [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/LockItem/src/main/res/layout/item_lock.xml) or java/kotlin code [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/java/com/abelhu/SlideAdapter.kt)
 
+6. if you need a gray transparent layer to guide user, follow [this link to see Guide](https://github.com/o0starshine0o/PagerLayout/Guide/)
+
+7. if you need a folder view, click it to open sub-file items, just like iOS, follow [this link to see FolderView](https://github.com/o0starshine0o/PagerLayout/FolderView/) and [this link to see NineDrawable](https://github.com/o0starshine0o/PagerLayout/NineDrawable/)
 # What's More
 
 ## PagerLayout
@@ -89,6 +109,11 @@ recyclerView.recycledViewPool.setMaxRecycledViews(SlideAdapter.TYPE_4, 20)
 recyclerView.recycledViewPool.setMaxRecycledViews(SlideAdapter.TYPE_3, 4)
 recyclerView.recycledViewPool.setMaxRecycledViews(SlideAdapter.TYPE_2, 4)
 recyclerView.recycledViewPool.setMaxRecycledViews(SlideAdapter.TYPE_1, 4)
+```
+
+OR using one `recycledViewPool` to cache all items
+```kotlin
+recyclerView.recycledViewPool.setMaxRecycledViews(0, 30)
 ```
 
 ## Indicator

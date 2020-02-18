@@ -105,7 +105,6 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             targetView.icons.setItemViewCacheSize(0)
             // 因为item基本都是一样的，这里直接共用recycledViewPool
             targetView.icons.recycledViewPool = recycledViewPool
-            targetView.icons.recycledViewPool.setMaxRecycledViews(targetView.icons.adapter.getItemViewType(0), grid * grid)
             // 设置PagerSnap保证滑动对齐
             PagerSnapHelper().attachToRecyclerView(targetView.icons)
             // 设置recyclerView的indicator
@@ -120,8 +119,7 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
             }
             folder.title?.text = "Folder View $index"
             folder.setOnClickListener { folder.shrink() }
-            (itemView.rootView as ViewGroup).addView(folder)
-            folder.expend()
+            (itemView.rootView as ViewGroup).addView(folder.expend())
         }
 
     }

@@ -167,7 +167,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 展开函数
      * 用于从某一固定位置展开target
      */
-    fun expend(during: Long = 200) {
+    fun expend(during: Long = 200): FolderView {
         this.post {
             this@FolderView.addView(target)
             ValueAnimator.ofFloat(targetScale, 1f).setDuration(during).apply {
@@ -175,14 +175,14 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 addUpdateListener { animation -> if ((animation.animatedValue as Float) >= 0.999f) expandListener?.invoke() }
             }.start()
         }
-
+        return this
     }
 
     /**
      * 缩小函数
      * 把target缩小到itemView
      */
-    fun shrink(during: Long = 200) {
+    fun shrink(during: Long = 200): FolderView {
         this.post {
             ValueAnimator.ofFloat(1f, targetScale).setDuration(during).apply {
                 addUpdateListener { animation -> updateTarget(animation) }
@@ -199,6 +199,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 }
             }.start()
         }
+        return this
     }
 
     private fun updateTarget(animator: ValueAnimator) {
