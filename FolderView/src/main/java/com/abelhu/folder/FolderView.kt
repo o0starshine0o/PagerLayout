@@ -19,6 +19,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
+typealias FolderClose = () -> Unit
+
+typealias FolderExpand = () -> Unit
 
 class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : ConstraintLayout(context, attrs, defStyle) {
     companion object {
@@ -42,11 +45,19 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     /**
      * 最终需要展示的view
      */
-    private var target: View? = null
+    private lateinit var target: View
     /**
      * target的边距
      */
     private var expandMargin = -1f
+    /**
+     * 关闭监听
+     */
+    var closeListener: FolderClose? = null
+    /**
+     * 展开监听
+     */
+    var expandListener: FolderExpand? = null
 
     /**
      * @param context 上下文
@@ -55,7 +66,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * @param itemView 用于计算FolderView缩小后的位置
      * @param targetView 用于替换itemView， 最终展示在FolderView中的view
      */
-    constructor(context: Context, backView: View, itemView: View? = null, targetView: View? = null, blurRadius: Float = 4f) : this(context) {
+    constructor(context: Context, backView: View, itemView: View, targetView: View, blurRadius: Float = 4f) : this(context) {
         // 创建模糊背景的background
         backView.apply {
             val start = System.currentTimeMillis()
@@ -85,12 +96,12 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             Log.i(Tag, "[${Thread.currentThread().name}] init background bitmap using time : ${System.currentTimeMillis() - start}")
         }
         // 获取itemView的位置信息
-        intArrayOf(0, 0).also { itemView?.getLocationInWindow(it) }.also {
+        intArrayOf(0, 0).also { itemView.getLocationInWindow(it) }.also {
             shrinkRect.apply {
                 left = it[0]
                 top = it[1]
-                right = left + (itemView?.measuredWidth ?: 0)
-                bottom = top + (itemView?.measuredHeight ?: 0)
+                right = left + (itemView.measuredWidth)
+                bottom = top + (itemView.measuredHeight)
             }
         }
         // 计算展开后的位置
@@ -105,7 +116,7 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         targetScale = shrinkRect.width().toFloat() / expandRect.width()
         // target
         target = targetView
-        target?.layoutParams = generateDefaultLayoutParams().apply {
+        target.layoutParams = generateDefaultLayoutParams().apply {
             startToStart = this@FolderView.id
             endToEnd = this@FolderView.id
             topToTop = this@FolderView.id
@@ -159,7 +170,10 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     fun expend(during: Long = 200) {
         this.post {
             this@FolderView.addView(target)
-            ValueAnimator.ofFloat(targetScale, 1f).setDuration(during).apply { addUpdateListener { animation -> updateTarget(animation) } }.start()
+            ValueAnimator.ofFloat(targetScale, 1f).setDuration(during).apply {
+                addUpdateListener { animation -> updateTarget(animation) }
+                addUpdateListener { animation -> if ((animation.animatedValue as Float) >= 0.999f) expandListener?.invoke() }
+            }.start()
         }
 
     }
@@ -173,10 +187,13 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             ValueAnimator.ofFloat(1f, targetScale).setDuration(during).apply {
                 addUpdateListener { animation -> updateTarget(animation) }
                 addUpdateListener { animation ->
-                    if ((animation.animatedValue as Float) <= targetScale + 0.0001 && parent != null) {
-                        (parent as ViewGroup).apply {
-                            removeView(this@FolderView)
-                            postInvalidate()
+                    if ((animation.animatedValue as Float) <= targetScale + 0.0001) {
+                        closeListener?.invoke()
+                        if (parent != null) {
+                            (parent as ViewGroup).apply {
+                                removeView(this@FolderView)
+                                postInvalidate()
+                            }
                         }
                     }
                 }
@@ -187,11 +204,11 @@ class FolderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private fun updateTarget(animator: ValueAnimator) {
         val percent = animator.animatedValue as Float
         // 修改缩放值
-        target?.scaleX = percent
-        target?.scaleY = percent
+        target.scaleX = percent
+        target.scaleY = percent
         // 修改移动值
-        target?.translationX = (shrinkRect.exactCenterX() - expandRect.exactCenterX()) * (percent - 1) / (targetScale - 1)
-        target?.translationY = (shrinkRect.exactCenterY() - expandRect.exactCenterY()) * (percent - 1) / (targetScale - 1)
+        target.translationX = (shrinkRect.exactCenterX() - expandRect.exactCenterX()) * (percent - 1) / (targetScale - 1)
+        target.translationY = (shrinkRect.exactCenterY() - expandRect.exactCenterY()) * (percent - 1) / (targetScale - 1)
         // 修改背景的透明度
         background?.alpha = 255 - (255 * (percent - 1) / (targetScale - 1)).toInt()
         // 修改title的透明度

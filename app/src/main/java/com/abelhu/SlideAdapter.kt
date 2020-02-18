@@ -112,16 +112,24 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
         private fun createFolder(resourceId: Int, grid: Int, index: Int) {
             // 设置文件夹的RecycleView
             val targetView = LayoutInflater.from(itemView.context).inflate(R.layout.folder, itemView.rootView as ViewGroup, false)
-            targetView.icons.adapter = FolderAdapter(List(20) { resourceId })
+            targetView.icons.adapter = FolderAdapter(List(20) { resourceId }, grid)
             targetView.icons.layoutManager = PagerLayoutManager { 12 / grid }
             targetView.icons.setItemViewCacheSize(0)
             // 因为item基本都是一样的，这里直接共用recycledViewPool
             targetView.icons.recycledViewPool = recycledViewPool
+            targetView.icons.recycledViewPool.setMaxRecycledViews(targetView.icons.adapter.getItemViewType(0), grid * grid)
             // 设置PagerSnap保证滑动对齐
             PagerSnapHelper().attachToRecyclerView(targetView.icons)
             // 设置recyclerView的indicator
             targetView.dotIndicator.attachToRecyclerView(targetView.icons)
             val folder = FolderView(itemView.context, itemView.rootView, itemView.iconView, targetView)
+            folder.closeListener = {
+                // 文件夹关闭，回收所有item
+                val clazz = targetView.icons::class.java
+                val method = clazz.getDeclaredMethod("removeAndRecycleViews")
+                method.isAccessible = true
+                method.invoke(targetView.icons)
+            }
             folder.title?.text = "Folder View $index"
             folder.setOnClickListener { folder.shrink() }
             (itemView.rootView as ViewGroup).addView(folder)

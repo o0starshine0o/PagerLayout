@@ -1,6 +1,7 @@
 package com.abelhu
 
 import android.graphics.Color
+import android.support.annotation.IntDef
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,11 +11,22 @@ import android.widget.Toast
 import com.abelhu.lockitem.LockItem
 import kotlinx.android.synthetic.main.item_icon.view.*
 
-class FolderAdapter(private val iconList: List<Int> = List(0) { 0 }) : RecyclerView.Adapter<FolderAdapter.FolderHolder>() {
+class FolderAdapter(private val iconList: List<Int> = List(0) { 0 }, @TYPE private val type: Int = TYPE_3) :
+    RecyclerView.Adapter<FolderAdapter.FolderHolder>() {
 
     companion object {
         private val Tag = FolderAdapter::class.simpleName
+
+        @Retention(AnnotationRetention.SOURCE)
+        @IntDef(TYPE_2, TYPE_3, TYPE_4)
+        annotation class TYPE
+
+        const val TYPE_2 = 6
+        const val TYPE_3 = 4
+        const val TYPE_4 = 3
     }
+
+    override fun getItemViewType(position: Int) = type.shl(4)
 
     override fun getItemCount() = iconList.size
 
