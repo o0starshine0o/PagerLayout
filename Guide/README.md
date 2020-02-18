@@ -17,12 +17,12 @@ what we can do...
 
 # Quick View
 
-![https://github.com/o0starshine0o/PagerLayout/Guide/](../screenCaptures/guide.gif)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/Guide/](../screenCaptures/guide.gif)
 
 # Install
 Please using latest version:
 
-2. [Guide](https://github.com/o0starshine0o/PagerLayout/Guide/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/guide)
+2. [Guide](https://github.com/o0starshine0o/PagerLayout/tree/master/Guide/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/guide)
 ```
 // 新手引导
 implementation 'com.github.qicodes:guide:1.0.0'

@@ -19,7 +19,7 @@
 # Install
 Please using latest version:
 
-0. [LockItem](https://github.com/o0starshine0o/PagerLayout/LockItem/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
+0. [LockItem](https://github.com/o0starshine0o/PagerLayout/tree/master/LockItem/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
 ```
 // 加锁红点item
 implementation 'com.github.qicodes:lockitem:1.0.0'

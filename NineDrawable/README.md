@@ -20,7 +20,7 @@ what we can do...
 # Install
 Please using latest version:
 
-0. [NineDrawable](https://github.com/o0starshine0o/PagerLayout/NineDrawable/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/ninedrawable)
+0. [NineDrawable](https://github.com/o0starshine0o/PagerLayout/tree/master/NineDrawable/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/ninedrawable)
 ```
 // 生成九宫格的drawable
 implementation 'com.github.qicodes:ninedrawable:1.0.0'

@@ -15,12 +15,12 @@ what we can do...
 
 # Quick View
 
-![https://github.com/o0starshine0o/PagerLayout/FolderView/](../screenCaptures/folder.gif)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/](../screenCaptures/folder.gif)
 
 # Install
 Please using latest version:
 
-0. [FolderView](https://github.com/o0starshine0o/PagerLayout/FolderView/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/folderview)
+0. [FolderView](https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/folderview)
 
 ```
 // iOS风格文件夹

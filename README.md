@@ -23,17 +23,17 @@ what we can do...
 
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/drawable.gif)
 ![https://github.com/o0starshine0o/PagerLayout](screenCaptures/icon.gif)
-![https://github.com/o0starshine0o/PagerLayout/LockItem/](screenCaptures/lock_dot.png)
-![https://github.com/o0starshine0o/PagerLayout/Guide/](screenCaptures/guide.png)
-![https://github.com/o0starshine0o/PagerLayout/FolderView/](screenCaptures/folder.png)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/LockItem/](screenCaptures/lock_dot.png)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/Guide/](screenCaptures/guide.png)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/](screenCaptures/folder.png)
 # Install
 Please using latest version:
 
 0. [PagerLayout](https://github.com/o0starshine0o/PagerLayout):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
-1. [LockItem](https://github.com/o0starshine0o/PagerLayout/LockItem/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
-2. [Guide](https://github.com/o0starshine0o/PagerLayout/Guide/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/guide)
-3. [FolderView](https://github.com/o0starshine0o/PagerLayout/FolderView/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/folderview)
-4. [NineDrawable](https://github.com/o0starshine0o/PagerLayout/NineDrawable/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/ninedrawable)
+1. [LockItem](https://github.com/o0starshine0o/PagerLayout/tree/master/LockItem/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
+2. [Guide](https://github.com/o0starshine0o/PagerLayout/tree/master/Guide/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/guide)
+3. [FolderView](https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/folderview)
+4. [NineDrawable](https://github.com/o0starshine0o/PagerLayout/tree/master/NineDrawable/):![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/ninedrawable)
 ```
 // 翻页网格布局，本地或者网络库
 implementation 'com.github.qicodes:pagerlayout:1.0.0'
@@ -73,12 +73,11 @@ lineIndicator.attachToRecyclerView(recyclerView)
 lineIndicator2.attachToRecyclerView(recyclerView)
 drawIndicator.attachToRecyclerView(recyclerView)
 ```
-5. if you need your item in `RecyclerView` with lock or dot, you can implementation `lockitem`, follow [this link to see LockItem](https://github.com/o0starshine0o/PagerLayout/LockItem/)
-,and control the value with xml define in [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/LockItem/src/main/res/layout/item_lock.xml) or java/kotlin code [Demo](https://github.com/o0starshine0o/PagerLayout/blob/master/app/src/main/java/com/abelhu/SlideAdapter.kt)
+5. if you need your item in `RecyclerView` with lock or dot, you can implementation `lockitem`, follow [this link to see LockItem](https://github.com/o0starshine0o/PagerLayout/tree/master/LockItem/)
 
-6. if you need a gray transparent layer to guide user, follow [this link to see Guide](https://github.com/o0starshine0o/PagerLayout/Guide/)
+6. if you need a gray transparent layer to guide user, follow [this link to see Guide](https://github.com/o0starshine0o/PagerLayout/tree/master/Guide/)
 
-7. if you need a folder view, click it to open sub-file items, just like iOS, follow [this link to see FolderView](https://github.com/o0starshine0o/PagerLayout/FolderView/) and [this link to see NineDrawable](https://github.com/o0starshine0o/PagerLayout/NineDrawable/)
+7. if you need a folder view, click it to open sub-file items, just like iOS, follow [this link to see FolderView](https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/) and [this link to see NineDrawable](https://github.com/o0starshine0o/PagerLayout/tree/master/NineDrawable/)
 # What's More
 
 ## PagerLayout
