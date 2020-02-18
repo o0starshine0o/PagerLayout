@@ -120,7 +120,7 @@ class LockItem @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     private fun drawCorners(canvas: Canvas) {
         // 初始化圆角图片
-        if (cornerBitmap == null) {
+        if (cornerBitmap == null || cornerBitmap?.width != width || cornerBitmap?.height != height) {
             cornerBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             cornerBitmap?.also {
                 val rect = RectF(paddingLeft.toFloat(), paddingTop.toFloat(), width - paddingRight.toFloat(), height - paddingBottom.toFloat())

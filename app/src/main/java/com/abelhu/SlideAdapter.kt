@@ -34,21 +34,9 @@ class SlideAdapter(context: Context, private val recycledViewPool: RecyclerView.
         iconList = MutableList(typedArray.length()) { i -> typedArray.getResourceId(i, -1) }
         typedArray.recycle()
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideHolder {
         Log.i(TAG, "onCreateViewHolder with type: $viewType")
         return SlideHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_lock, parent, false), recycledViewPool)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when (position) {
-            in 56..58 -> TYPE_3
-            in 46..51 -> TYPE_6
-            37 -> TYPE_1
-            0, 1 -> TYPE_2
-            18, 19, 20 -> TYPE_3
-            else -> TYPE_4
-        }
     }
 
     override fun getItemCount() = 200
