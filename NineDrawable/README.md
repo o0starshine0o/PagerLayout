@@ -15,7 +15,7 @@ what we can do...
 
 # Quick View
 
-![https://github.com/o0starshine0o/PagerLayout/FolderView/](../screenCaptures/folder0.gif)
+![https://github.com/o0starshine0o/PagerLayout/tree/master/FolderView/](../screenCaptures/folder.gif)
 
 # Install
 Please using latest version:
