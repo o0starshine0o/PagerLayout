@@ -1,4 +1,4 @@
-![https://github.com/o0starshine0o/PagerLayout](screenCaptures/logo.jpg)
+![https://github.com/o0starshine0o/PagerLayout](screenCaptures/logo_V2.jpg)
 
 ![Travis (.com)](https://img.shields.io/travis/com/o0starshine0o/PagerLayout)
 ![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
@@ -24,7 +24,7 @@ Please using latest version:
 
 0. pagerlayout:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/pagerlayout)
 1. lockitem:![Maven Central](https://img.shields.io/maven-central/v/com.github.qicodes/lockitem)
-```xml
+```
 // 翻页网格布局，本地或者网络库
 implementation 'com.github.qicodes:pagerlayout:1.0.0'
 // 加锁红点item（如果需要加锁或者红点可以添加）
@@ -95,7 +95,7 @@ recyclerView.recycledViewPool.setMaxRecycledViews(SlideAdapter.TYPE_1, 4)
 
 You can set `width`, `height`, `normalColor`, `selectColor`, `padding`, `round` to `indicator`. 
 Also you can set a **`Bitmap`** as `indicator`
-```xml
+```
 android:padding="8dp"
 app:indicatorHeight="26dp"
 app:indicatorWidth="26dp"
