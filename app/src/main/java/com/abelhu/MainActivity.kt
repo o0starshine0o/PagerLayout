@@ -12,6 +12,8 @@ import com.abelhu.pagerlayout.PagerLayoutManager
 import com.abelhu.pagerlayout.PagerSnapHelper
 import com.abelhu.smoothlayout.SmoothLinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_skip.view.*
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -76,14 +78,16 @@ class MainActivity : AppCompatActivity() {
                 else -> 4
             }
             val itemView = icons.findViewHolderForAdapterPosition(itemIndex).itemView
+            val itemView2 = icons.findViewHolderForAdapterPosition(max(0, itemIndex - 1)).itemView
             val guide = when (position) {
-                Guide.Window.LEFT -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_left, 100, position)
-                Guide.Window.TOP -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_top, 100, position)
-                Guide.Window.RIGHT -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_right, -100, position)
-                else -> Guide(baseContext).addWindow(itemView, R.layout.item_guide_bottom, -100, position)
+                Guide.Window.LEFT -> Guide(baseContext).addWindow(R.layout.item_guide_left, 100, position, itemView)
+                Guide.Window.TOP -> Guide(baseContext).addWindow(R.layout.item_guide_top, 100, position, itemView)
+                Guide.Window.RIGHT -> Guide(baseContext).addWindow(R.layout.item_guide_right, -100, position, itemView)
+                else -> Guide(baseContext).addWindow(R.layout.item_guide_bottom, -100, position, itemView, itemView2)
             }
-            guide.setOnClickListener {
-                Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
+            guide.addSkip(R.layout.item_skip)
+            guide.skip.setOnClickListener {
+                Toast.makeText(baseContext, "click skip", Toast.LENGTH_SHORT).show()
                 guide.dismiss()
                 when (position) {
                     Guide.Window.BOTTOM -> showGuide(Guide.Window.LEFT)

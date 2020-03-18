@@ -22,7 +22,7 @@ class GuideActivity : AppCompatActivity() {
 
     private fun showGuideBottom() {
         val guide = Guide(baseContext)
-        guide.addWindow(top, R.layout.item_guide_bottom, -100).setOnClickListener {
+        guide.addWindow(R.layout.item_guide_bottom, -100, Guide.Window.LEFT, top).setOnClickListener {
             Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
             guide.dismiss()
             showGuideLeft()
@@ -32,7 +32,7 @@ class GuideActivity : AppCompatActivity() {
 
     private fun showGuideLeft() {
         val guide = Guide(baseContext)
-        guide.addWindow(top, R.layout.item_guide_left, 100, Guide.Window.LEFT).setOnClickListener {
+        guide.addWindow(R.layout.item_guide_left, 100, Guide.Window.LEFT, top).setOnClickListener {
             Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
             guide.dismiss()
             showGuideTop()
@@ -42,7 +42,7 @@ class GuideActivity : AppCompatActivity() {
 
     private fun showGuideTop() {
         val guide = Guide(baseContext)
-        guide.addWindow(bottom, R.layout.item_guide_top, 100, Guide.Window.TOP).setOnClickListener {
+        guide.addWindow(R.layout.item_guide_top, 100, Guide.Window.TOP, bottom).setOnClickListener {
             Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
             guide.dismiss()
             showGuideRight()
@@ -52,7 +52,7 @@ class GuideActivity : AppCompatActivity() {
 
     private fun showGuideRight() {
         val guide = Guide(baseContext)
-        guide.addWindow(bottom, R.layout.item_guide_right, -100, Guide.Window.RIGHT).setOnClickListener {
+        guide.addWindow(R.layout.item_guide_right, -100, Guide.Window.RIGHT, bottom).setOnClickListener {
             Toast.makeText(baseContext, "click guide", Toast.LENGTH_SHORT).show()
             guide.dismiss()
         }

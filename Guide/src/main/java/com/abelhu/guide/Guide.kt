@@ -21,10 +21,6 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
-    companion object {
-        private val Tag = Guide::class.java.simpleName
-    }
-
     var touchDismiss = true
     /**
      * 画笔
@@ -39,18 +35,43 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      */
     private var backgroundBitmap: Bitmap? = null
 
-    fun addWindow(view: View, @LayoutRes help: Int, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM): Guide {
-        return addWindow(view, LayoutInflater.from(context).inflate(help, this, false), offset, position)
+    /**
+     * @param help 用于帮助的view
+     * @param offset help距离透明区域有多远
+     * @param position help位于透明区域什么方位
+     * @param views 由哪些view组成透明区域
+     */
+    fun addWindow(@LayoutRes help: Int, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM, vararg views: View): Guide {
+        return addWindow(LayoutInflater.from(context).inflate(help, this, false), offset, position, *views)
     }
 
-    fun addWindow(view: View, help: View? = null, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM): Guide {
-        val window = Window(view, intArrayOf(0, 0, 0, 0), position, help, offset)
+    /**
+     * @param help 用于帮助的view
+     * @param offset help距离透明区域有多远
+     * @param position help位于透明区域什么方位
+     * @param views 由哪些view组成透明区域
+     */
+    fun addWindow(help: View? = null, offset: Int = 0, @Window.Companion.POSITION position: Int = Window.BOTTOM, vararg views: View): Guide {
+        val window = Window(position, help, offset, *views)
         addView(window.mainGuideLine)
         addView(window.crossGuideLine)
         addView(window.help)
         // 记录窗口，用于穿透区域绘制和点击判定
         windows.add(window)
         return this
+    }
+
+    fun addSkip(@LayoutRes skip: Int, params: ConstraintLayout.LayoutParams? = null) {
+        addSkip(LayoutInflater.from(context).inflate(skip, this, false), params)
+    }
+
+    fun addSkip(skip: View, params: ConstraintLayout.LayoutParams? = null) {
+        skip.layoutParams = params ?: LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT)).apply {
+            topToTop = id
+            endToEnd = id
+            topMargin = 100
+        }
+        addView(skip)
     }
 
     fun dismiss() {
@@ -77,6 +98,8 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         // 设置此控件的id
         id = R.id.guide
+        // 防止点击穿透
+        isClickable = true
     }
 
     override fun generateLayoutParams(attrs: AttributeSet): ConstraintLayout.LayoutParams {
@@ -131,7 +154,8 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         return super.onTouchEvent(event)
     }
 
-    class Window(view: View, private val location: IntArray, @POSITION position: Int = BOTTOM, help: View? = null, offset: Int = 0) {
+    @SuppressLint("Range")
+    class Window(@POSITION position: Int = BOTTOM, help: View? = null, offset: Int = 0, vararg views: View) {
         companion object {
             @Retention(AnnotationRetention.SOURCE)
             @IntDef(LEFT, TOP, RIGHT, BOTTOM)
@@ -169,19 +193,31 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         val bottom
             get() = location[3].toFloat()
 
+        private val location = intArrayOf(Int.MAX_VALUE, Int.MAX_VALUE, Int.MIN_VALUE, Int.MIN_VALUE)
+
         init {
-            // 记录view的位置
-            view.getLocationInWindow(location)
-            location[2] = location[0] + view.width
-            location[3] = location[1] + view.height
+            if (views.isEmpty()) throw Exception("views size must > 0")
+            // 上下文
+            val context = views[0].context
+            // 记录需要空出来的位置
+            for (view in views) {
+                val tempLocation = intArrayOf(0, 0, 0, 0)
+                view.getLocationInWindow(tempLocation)
+                tempLocation[2] = tempLocation[0] + view.width
+                tempLocation[3] = tempLocation[1] + view.height
+                if (tempLocation[0] < location[0]) location[0] = tempLocation[0]
+                if (tempLocation[1] < location[1]) location[1] = tempLocation[1]
+                if (tempLocation[2] > location[2]) location[2] = tempLocation[2]
+                if (tempLocation[3] > location[3]) location[3] = tempLocation[3]
+            }
             // 绘制需要裁剪的图形
-            bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ALPHA_8)
+            bitmap = Bitmap.createBitmap(location[2] - location[0], location[3] - location[1], Bitmap.Config.ALPHA_8)
             // 根据position设置mainGuideLine和crossGuideLine
-            mainGuideLine = Guideline(view.context)
+            mainGuideLine = Guideline(context)
             mainGuideLine?.id = generateViewId()
             val mainGuideLayout = LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
             mainGuideLayout.type = TYPE_STAY
-            crossGuideLine = Guideline(view.context)
+            crossGuideLine = Guideline(context)
             crossGuideLine?.id = generateViewId()
             val crossGuideLayout = LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
             crossGuideLayout.type = TYPE_STAY
