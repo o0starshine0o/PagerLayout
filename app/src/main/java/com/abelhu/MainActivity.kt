@@ -8,6 +8,11 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
 import com.abelhu.guide.Guide
+import com.abelhu.guide.Help
+import com.abelhu.guide.Help.Companion.BOTTOM
+import com.abelhu.guide.Help.Companion.LEFT
+import com.abelhu.guide.Help.Companion.RIGHT
+import com.abelhu.guide.Help.Companion.TOP
 import com.abelhu.pagerlayout.PagerLayoutManager
 import com.abelhu.pagerlayout.PagerSnapHelper
 import com.abelhu.smoothlayout.SmoothLinearLayoutManager
@@ -69,30 +74,43 @@ class MainActivity : AppCompatActivity() {
         drawIndicator.attachToRecyclerView(icons)
     }
 
-    private fun showGuide(@Guide.Window.Companion.POSITION position: Int = Guide.Window.BOTTOM) {
+    private fun showGuide(@Help.Companion.POSITION position: Int = BOTTOM) {
         icons.post {
             val itemIndex = when (position) {
-                Guide.Window.LEFT -> 1
-                Guide.Window.TOP -> 3
-                Guide.Window.RIGHT -> 0
+                LEFT -> 1
+                TOP -> 3
+                RIGHT -> 0
                 else -> 4
             }
-            val itemView = icons.findViewHolderForAdapterPosition(itemIndex).itemView
-            val itemView2 = icons.findViewHolderForAdapterPosition(max(0, itemIndex - 1)).itemView
+            val v0 = icons.findViewHolderForAdapterPosition(itemIndex).itemView
+            val v1 = icons.findViewHolderForAdapterPosition(max(0, itemIndex - 1)).itemView
+            v1.isDrawingCacheEnabled = true
+            v1.buildDrawingCache()
             val guide = when (position) {
-                Guide.Window.LEFT -> Guide(baseContext).addWindow(R.layout.item_guide_left, 100, position, itemView)
-                Guide.Window.TOP -> Guide(baseContext).addWindow(R.layout.item_guide_top, 100, position, itemView)
-                Guide.Window.RIGHT -> Guide(baseContext).addWindow(R.layout.item_guide_right, -100, position, itemView)
-                else -> Guide(baseContext).addWindow(R.layout.item_guide_bottom, -100, position, itemView, itemView2)
+                // 多窗口演示
+                LEFT -> Guide(baseContext).apply {
+                    addWindow(null, v0).addHelp(this, R.layout.item_guide_left, LEFT, 100)
+                    addWindow(null, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
+                }
+                // 绘制bitmap演示
+                TOP -> Guide(baseContext).apply { addWindow(v1.drawingCache, v0).addHelp(this, R.layout.item_guide_top, TOP, 100) }
+                // 多help演示
+                RIGHT -> Guide(baseContext).apply {
+                    addWindow(null, v0)
+                        .addHelp(this, R.layout.item_guide_right, RIGHT, -100)
+                        .addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
+                }
+                // 合并多窗口演示
+                else -> Guide(baseContext).apply { addWindow(null, v0, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100) }
             }
             guide.addSkip(R.layout.item_skip)
             guide.skip.setOnClickListener {
                 Toast.makeText(baseContext, "click skip", Toast.LENGTH_SHORT).show()
                 guide.dismiss()
                 when (position) {
-                    Guide.Window.BOTTOM -> showGuide(Guide.Window.LEFT)
-                    Guide.Window.LEFT -> showGuide(Guide.Window.TOP)
-                    Guide.Window.TOP -> showGuide(Guide.Window.RIGHT)
+                    BOTTOM -> showGuide(LEFT)
+                    LEFT -> showGuide(TOP)
+                    TOP -> showGuide(RIGHT)
                 }
             }
             (window.decorView as ViewGroup).addView(guide)

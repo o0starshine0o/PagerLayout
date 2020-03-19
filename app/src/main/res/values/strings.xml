@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">PagerLayout</string>
     <string name="action_settings">Settings</string>
-    <string name="skip">Skip</string>
+    <string name="guide">Guide</string>
 </resources>
