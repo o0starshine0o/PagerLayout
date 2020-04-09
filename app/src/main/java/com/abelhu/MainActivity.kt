@@ -1,5 +1,6 @@
 package com.abelhu
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -93,7 +94,10 @@ class MainActivity : AppCompatActivity() {
                     addWindow(null, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
                 }
                 // 绘制bitmap演示
-                TOP -> Guide(baseContext).apply { addWindow(v1.drawingCache, v0).addHelp(this, R.layout.item_guide_top, TOP, 100) }
+                TOP -> Guide(baseContext).apply {
+                    val draw = BitmapFactory.decodeResource(context.resources, R.mipmap.mask_guide)
+                    addWindow(draw, v0).addHelp(this, R.layout.item_guide_top, TOP, 100)
+                }
                 // 多help演示
                 RIGHT -> Guide(baseContext).apply {
                     addWindow(null, v0)

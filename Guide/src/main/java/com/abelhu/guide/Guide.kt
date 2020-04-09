@@ -122,10 +122,11 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         // 绘制背景
         backgroundBitmap?.also { canvas.drawBitmap(it, 0f, 0f, paint) }
         // 去掉或者绘制窗口区域
-        for (window in windows) {
-            paint.xfermode = window.bitmapDelegate.mode
-            window.bitmapDelegate.bitmap.also { canvas.drawBitmap(it, window.left.toFloat(), window.top.toFloat(), paint) }
-        }
+        windows.forEach { it.bitmapDelegate.draw(canvas, context.resources, paint) }
+//        for (window in windows) {
+//            paint.xfermode = window.bitmapDelegate.mode
+//            window.bitmapDelegate.bitmap.also { canvas.drawBitmap(it, window.left.toFloat(), window.top.toFloat(), paint) }
+//        }
         paint.xfermode = null
         // 应用图层
         canvas.restoreToCount(layer)

@@ -1,10 +1,9 @@
 package com.abelhu.guide
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.Rect
+import android.content.res.Resources
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
@@ -83,5 +82,17 @@ class Window(draw: Bitmap? = null, vararg views: View) {
         return this
     }
 
-    class BitmapDelegate(val bitmap: Bitmap, val mode: PorterDuffXfermode? = PorterDuffXfermode(PorterDuff.Mode.DST_IN))
+    inner class BitmapDelegate(val bitmap: Bitmap, val mode: PorterDuffXfermode? = PorterDuffXfermode(PorterDuff.Mode.DST_IN)) {
+        fun draw(canvas: Canvas, res: Resources, paint: Paint) {
+            if (mode == null) {
+                BitmapDrawable(res, bitmap).apply {
+                    setBounds(left, top, right, bottom)
+                    draw(canvas)
+                }
+            } else {
+                paint.xfermode = mode
+                canvas.drawBitmap(bitmap, left.toFloat(), top.toFloat(), paint)
+            }
+        }
+    }
 }
