@@ -8,14 +8,20 @@ import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.abelhu.guide.NinePatchBitmapFactory.createNinePatchDrawable
+
+// 使用一个简单的策略模式支持.9图片的绘制
+interface WindowDraw {
+    fun draw(canvas: Canvas, res: Resources, paint: Paint)
+}
 
 @SuppressLint("Range")
-class Window(draw: Bitmap? = null, vararg views: View) {
+class Window(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: View) {
 
     /**
      * 要做差集运算，这边先缓存此bitmap
      */
-    var bitmapDelegate: BitmapDelegate
+    var drawDelegate: WindowDraw
 
     val left
         get() = location[0]
@@ -33,8 +39,6 @@ class Window(draw: Bitmap? = null, vararg views: View) {
 
     init {
         if (views.isEmpty()) throw Exception("views size must > 0")
-        // 上下文
-        val context = views[0].context
         // 遍历所有view,记录需要空出来的位置
         for (view in views) {
             val tempLocation = intArrayOf(0, 0, 0, 0)
@@ -46,11 +50,10 @@ class Window(draw: Bitmap? = null, vararg views: View) {
             if (tempLocation[2] > location[2]) location[2] = tempLocation[2]
             if (tempLocation[3] > location[3]) location[3] = tempLocation[3]
         }
-        // 绘制需要的图形
-        bitmapDelegate = if (draw == null) {
-            BitmapDelegate(Bitmap.createBitmap(location[2] - location[0], location[3] - location[1], Bitmap.Config.ALPHA_8))
-        } else {
-            BitmapDelegate(draw, null)
+        drawDelegate = when {
+            draw == null -> BitmapDelegate(Bitmap.createBitmap(location[2] - location[0], location[3] - location[1], Bitmap.Config.ALPHA_8))
+            ninePatch -> NinePatchDelegate(draw)
+            else -> BitmapDelegate(draw, null)
         }
     }
 
@@ -82,8 +85,8 @@ class Window(draw: Bitmap? = null, vararg views: View) {
         return this
     }
 
-    inner class BitmapDelegate(val bitmap: Bitmap, val mode: PorterDuffXfermode? = PorterDuffXfermode(PorterDuff.Mode.DST_IN)) {
-        fun draw(canvas: Canvas, res: Resources, paint: Paint) {
+    inner class BitmapDelegate(private val bitmap: Bitmap, private val mode: PorterDuffXfermode? = PorterDuffXfermode(PorterDuff.Mode.DST_IN)) : WindowDraw {
+        override fun draw(canvas: Canvas, res: Resources, paint: Paint) {
             if (mode == null) {
                 BitmapDrawable(res, bitmap).apply {
                     setBounds(left, top, right, bottom)
@@ -94,5 +97,15 @@ class Window(draw: Bitmap? = null, vararg views: View) {
                 canvas.drawBitmap(bitmap, left.toFloat(), top.toFloat(), paint)
             }
         }
+    }
+
+    inner class NinePatchDelegate(private val bitmap: Bitmap) : WindowDraw {
+        override fun draw(canvas: Canvas, res: Resources, paint: Paint) {
+            createNinePatchDrawable(res, bitmap).apply {
+                setBounds(left, top, right, bottom)
+                draw(canvas)
+            }
+        }
+
     }
 }

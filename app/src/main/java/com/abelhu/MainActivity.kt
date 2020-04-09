@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 // 绘制bitmap演示
                 TOP -> Guide(baseContext).apply {
                     val draw = BitmapFactory.decodeResource(context.resources, R.mipmap.mask_guide)
-                    addWindow(draw, v0).addHelp(this, R.layout.item_guide_top, TOP, 100)
+                    addWindow(draw, true, v0).addHelp(this, R.layout.item_guide_top, TOP, 100)
                 }
                 // 多help演示
                 RIGHT -> Guide(baseContext).apply {

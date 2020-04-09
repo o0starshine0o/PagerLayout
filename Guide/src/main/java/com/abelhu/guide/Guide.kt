@@ -37,7 +37,16 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      */
     fun addWindow(draw: Bitmap? = null, vararg views: View): Window {
         // 记录窗口，用于穿透区域绘制和点击判定
-        return Window(draw, *views).apply { windows.add(this) }
+        return Window(draw, false, *views).apply { windows.add(this) }
+    }
+
+    /**
+     * @param draw 如果传值，则替代透明区域
+     * @param views 由哪些view组成透明区域
+     */
+    fun addWindow(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: View): Window {
+        // 记录窗口，用于穿透区域绘制和点击判定
+        return Window(draw, ninePatch, *views).apply { windows.add(this) }
     }
 
     /**
@@ -122,7 +131,7 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         // 绘制背景
         backgroundBitmap?.also { canvas.drawBitmap(it, 0f, 0f, paint) }
         // 去掉或者绘制窗口区域
-        windows.forEach { it.bitmapDelegate.draw(canvas, context.resources, paint) }
+        windows.forEach { it.drawDelegate.draw(canvas, context.resources, paint) }
 //        for (window in windows) {
 //            paint.xfermode = window.bitmapDelegate.mode
 //            window.bitmapDelegate.bitmap.also { canvas.drawBitmap(it, window.left.toFloat(), window.top.toFloat(), paint) }
