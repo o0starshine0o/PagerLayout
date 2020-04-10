@@ -11,10 +11,11 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 /**
  * @param help 用于帮助的view
  * @param offset help距离透明区域有多远
+ * @param crossOffset help在交叉轴上的偏移量
  * @param position help位于透明区域什么方位
  * @param area 透明区域
  */
-class Help(val help: View, @POSITION position: Int, offset: Int = 0, area: Rect) {
+class Help(val help: View, @POSITION position: Int, offset: Int = 0, crossOffset: Int = 0, area: Rect) {
     companion object {
         @Retention(AnnotationRetention.SOURCE)
         @IntDef(LEFT, TOP, RIGHT, BOTTOM)
@@ -49,7 +50,7 @@ class Help(val help: View, @POSITION position: Int, offset: Int = 0, area: Rect)
                 mainGuideLayout.topToTop = R.id.guide
                 mainGuideLayout.bottomToBottom = R.id.guide
                 crossGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
-                crossGuideLayout.guideBegin = area.height() / 2 + area.top
+                crossGuideLayout.guideBegin = area.height() / 2 + area.top + crossOffset
                 crossGuideLayout.startToStart = R.id.guide
                 crossGuideLayout.endToEnd = R.id.guide
             }
@@ -59,7 +60,7 @@ class Help(val help: View, @POSITION position: Int, offset: Int = 0, area: Rect)
                 mainGuideLayout.startToStart = R.id.guide
                 mainGuideLayout.endToEnd = R.id.guide
                 crossGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
-                crossGuideLayout.guideBegin = area.width() / 2 + area.left
+                crossGuideLayout.guideBegin = area.width() / 2 + area.left + crossOffset
                 crossGuideLayout.topToTop = R.id.guide
                 crossGuideLayout.bottomToBottom = R.id.guide
             }
@@ -69,7 +70,7 @@ class Help(val help: View, @POSITION position: Int, offset: Int = 0, area: Rect)
                 mainGuideLayout.topToTop = R.id.guide
                 mainGuideLayout.bottomToBottom = R.id.guide
                 crossGuideLayout.orientation = ConstraintLayout.LayoutParams.HORIZONTAL
-                crossGuideLayout.guideBegin = area.height() / 2 + area.top
+                crossGuideLayout.guideBegin = area.height() / 2 + area.top + crossOffset
                 crossGuideLayout.startToStart = R.id.guide
                 crossGuideLayout.endToEnd = R.id.guide
             }
@@ -79,7 +80,7 @@ class Help(val help: View, @POSITION position: Int, offset: Int = 0, area: Rect)
                 mainGuideLayout.startToStart = R.id.guide
                 mainGuideLayout.endToEnd = R.id.guide
                 crossGuideLayout.orientation = ConstraintLayout.LayoutParams.VERTICAL
-                crossGuideLayout.guideBegin = area.width() / 2 + area.left
+                crossGuideLayout.guideBegin = area.width() / 2 + area.left + crossOffset
                 crossGuideLayout.topToTop = R.id.guide
                 crossGuideLayout.bottomToBottom = R.id.guide
             }

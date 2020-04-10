@@ -1,6 +1,5 @@
 package com.abelhu
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +13,7 @@ import com.abelhu.guide.Help.Companion.BOTTOM
 import com.abelhu.guide.Help.Companion.LEFT
 import com.abelhu.guide.Help.Companion.RIGHT
 import com.abelhu.guide.Help.Companion.TOP
+import com.abelhu.guide.NinePatchBitmapFactory.loadBitmapAsset
 import com.abelhu.pagerlayout.PagerLayoutManager
 import com.abelhu.pagerlayout.PagerSnapHelper
 import com.abelhu.smoothlayout.SmoothLinearLayoutManager
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // 绘制bitmap演示
                 TOP -> Guide(baseContext).apply {
-                    val draw = BitmapFactory.decodeResource(context.resources, R.mipmap.mask_guide)
+                    val draw = loadBitmapAsset(context, "mask_guide.9.png")
                     addWindow(draw, true, v0).addHelp(this, R.layout.item_guide_top, TOP, 100)
                 }
                 // 多help演示
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                         .addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
                 }
                 // 合并多窗口演示
-                else -> Guide(baseContext).apply { addWindow(null, v0, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100) }
+                else -> Guide(baseContext).apply { addWindow(null, v0, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100, -100) }
             }
             guide.addSkip(R.layout.item_skip)
             guide.skip.setOnClickListener {

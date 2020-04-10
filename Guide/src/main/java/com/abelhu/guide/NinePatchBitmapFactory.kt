@@ -1,16 +1,36 @@
 package com.abelhu.guide
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.NinePatchDrawable
+import java.io.BufferedInputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
 
 object NinePatchBitmapFactory {
     private const val NO_COLOR = 0x00000001
+
+    fun loadBitmapAsset(context: Context, fileName: String): Bitmap? {
+        var inputStream: BufferedInputStream? = null
+        try {
+            inputStream = BufferedInputStream(context.assets.open(fileName))
+            return BitmapFactory.decodeStream(inputStream)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                inputStream?.close()
+            } catch (e: Exception) {
+            }
+        }
+        return null
+    }
 
     fun createNinePatchDrawable(res: Resources?, bitmap: Bitmap): NinePatchDrawable {
         val rangeLists = checkBitmap(bitmap)

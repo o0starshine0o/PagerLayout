@@ -64,9 +64,10 @@ class Window(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: Vie
      * @param helpId 帮助的view的资源
      * @param position 位于区域的什么位置
      * @param offset 偏移量
+     * @param crossOffset 交叉轴的偏移量
      */
-    fun addHelp(parent: ViewGroup, @LayoutRes helpId: Int, @Help.Companion.POSITION position: Int, offset: Int = 0): Window {
-        return addHelp(parent, LayoutInflater.from(parent.context).inflate(helpId, parent, false), position, offset)
+    fun addHelp(parent: ViewGroup, @LayoutRes helpId: Int, @Help.Companion.POSITION position: Int, offset: Int = 0, crossOffset: Int = 0): Window {
+        return addHelp(parent, LayoutInflater.from(parent.context).inflate(helpId, parent, false), position, offset, crossOffset)
     }
 
     /**
@@ -76,9 +77,10 @@ class Window(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: Vie
      * @param help 帮助的view
      * @param position 位于区域的什么位置
      * @param offset 偏移量
+     * @param crossOffset 交叉轴的偏移量
      */
-    fun addHelp(parent: ViewGroup, help: View, @Help.Companion.POSITION position: Int, offset: Int = 0): Window {
-        val newHelp = Help(help, position, offset, Rect(left, top, right, bottom))
+    fun addHelp(parent: ViewGroup, help: View, @Help.Companion.POSITION position: Int, offset: Int = 0, crossOffset: Int = 0): Window {
+        val newHelp = Help(help, position, offset, crossOffset, Rect(left, top, right, bottom))
         parent.addView(newHelp.mainGuideLine)
         parent.addView(newHelp.crossGuideLine)
         parent.addView(newHelp.help)
