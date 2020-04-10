@@ -16,7 +16,7 @@ interface WindowDraw {
 }
 
 @SuppressLint("Range")
-class Window(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: View) {
+class Window(draw: Bitmap? = null, ninePatch: Boolean = false, width: Int = 0, height: Int = 0, vararg views: View) {
 
     /**
      * 要做差集运算，这边先缓存此bitmap
@@ -49,6 +49,15 @@ class Window(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: Vie
             if (tempLocation[1] < location[1]) location[1] = tempLocation[1]
             if (tempLocation[2] > location[2]) location[2] = tempLocation[2]
             if (tempLocation[3] > location[3]) location[3] = tempLocation[3]
+        }
+        // 设定了宽高，寻找中点，重新计算location
+        if (width * height != 0) {
+            val x = (location[0] + location[2]) / 2
+            val y = (location[1] + location[3]) / 2
+            location[0] = x - width / 2
+            location[1] = y - height / 2
+            location[2] = x + width / 2
+            location[3] = y + height / 2
         }
         drawDelegate = when {
             draw == null -> BitmapDelegate(Bitmap.createBitmap(location[2] - location[0], location[3] - location[1], Bitmap.Config.ALPHA_8))

@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 // 多窗口演示
                 LEFT -> Guide(baseContext).apply {
                     addWindow(null, v0).addHelp(this, R.layout.item_guide_left, LEFT, 100)
-                    addWindow(null, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
+                    addWindow(null, false, 0, 0, v1).addHelp(this, R.layout.item_guide_bottom, BOTTOM, -100)
                 }
                 // 绘制bitmap演示
                 TOP -> Guide(baseContext).apply {

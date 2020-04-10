@@ -37,7 +37,7 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      */
     fun addWindow(draw: Bitmap? = null, vararg views: View): Window {
         // 记录窗口，用于穿透区域绘制和点击判定
-        return Window(draw, false, *views).apply { windows.add(this) }
+        return addWindow(draw, false, *views)
     }
 
     /**
@@ -46,7 +46,18 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
      */
     fun addWindow(draw: Bitmap? = null, ninePatch: Boolean = false, vararg views: View): Window {
         // 记录窗口，用于穿透区域绘制和点击判定
-        return Window(draw, ninePatch, *views).apply { windows.add(this) }
+        return addWindow(draw, ninePatch, 0, 0, *views)
+    }
+
+    /**
+     * @param draw 如果传值，则替代透明区域
+     * @param views 由哪些view组成透明区域
+     * @param width 重新设置透明区域的宽度（width*height!=0生效）
+     * @param height 重新设置透明区域的高度（width*height!=0生效）
+     */
+    fun addWindow(draw: Bitmap? = null, ninePatch: Boolean = false, width: Int = 0, height: Int = 0, vararg views: View): Window {
+        // 记录窗口，用于穿透区域绘制和点击判定
+        return Window(draw, ninePatch, width, height, *views).apply { windows.add(this) }
     }
 
     /**
