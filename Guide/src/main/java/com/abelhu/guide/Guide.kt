@@ -63,15 +63,15 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
     /**
      * 添加窗口
      */
-    fun addWindow(@LayoutRes view: Int, params: LayoutParams? = null, margin: Int = 20) {
-        addWindow(LayoutInflater.from(context).inflate(view, this, false), params, margin)
+    fun addWindow(@LayoutRes view: Int, params: LayoutParams? = null, margin: Int = 20): View {
+        return addWindow(LayoutInflater.from(context).inflate(view, this, false), params, margin)
     }
 
     /**
      * 添加窗口
      */
-    fun addWindow(view: View, params: LayoutParams? = null, margin: Int = 20) {
-        view.layoutParams = params ?: LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT)).apply {
+    fun addWindow(view: View, params: LayoutParams? = null, margin: Int = 20): View {
+        view.layoutParams = params ?: LayoutParams(LayoutParams(MATCH_PARENT, WRAP_CONTENT)).apply {
             topToTop = id
             endToEnd = id
             bottomToBottom = id
@@ -82,6 +82,7 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
             rightMargin = margin
         }
         addView(view)
+        return view
     }
 
     /**
