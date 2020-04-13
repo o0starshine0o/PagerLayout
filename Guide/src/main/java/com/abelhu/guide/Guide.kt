@@ -61,6 +61,30 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
     }
 
     /**
+     * 添加窗口
+     */
+    fun addWindow(@LayoutRes view: Int, params: LayoutParams? = null, margin: Int = 20) {
+        addWindow(LayoutInflater.from(context).inflate(view, this, false), params, margin)
+    }
+
+    /**
+     * 添加窗口
+     */
+    fun addWindow(view: View, params: LayoutParams? = null, margin: Int = 20) {
+        view.layoutParams = params ?: LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT)).apply {
+            topToTop = id
+            endToEnd = id
+            bottomToBottom = id
+            startToStart = id
+            bottomMargin = margin
+            leftMargin = margin
+            topMargin = margin
+            rightMargin = margin
+        }
+        addView(view)
+    }
+
+    /**
      * 增加跳过按钮
      */
     fun addSkip(@LayoutRes skip: Int, top: Int = 120, params: LayoutParams? = null) {
