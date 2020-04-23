@@ -89,20 +89,21 @@ open class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet
     /**
      * 增加跳过按钮
      */
-    fun addSkip(@LayoutRes skip: Int, top: Int = 120, params: LayoutParams? = null) {
-        addSkip(LayoutInflater.from(context).inflate(skip, this, false), top, params)
+    fun addSkip(@LayoutRes skip: Int, top: Int = 120, params: LayoutParams? = null): View {
+        return LayoutInflater.from(context).inflate(skip, this, false).apply { addSkip(this, top, params) }
     }
 
     /**
      * 增加跳过按钮
      */
-    fun addSkip(skip: View, top: Int = 120, params: LayoutParams? = null) {
+    fun addSkip(skip: View, top: Int = 120, params: LayoutParams? = null): View {
         skip.layoutParams = params ?: LayoutParams(LayoutParams(WRAP_CONTENT, WRAP_CONTENT)).apply {
             topToTop = id
             endToEnd = id
             topMargin = top
         }
         addView(skip)
+        return skip
     }
 
     /**
