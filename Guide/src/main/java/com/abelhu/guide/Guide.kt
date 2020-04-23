@@ -15,7 +15,8 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import java.util.*
 
-class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
+open class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+    ConstraintLayout(context, attrs, defStyleAttr) {
     var touchDismiss = false
     /**
      * 画笔
@@ -168,10 +169,6 @@ class Guide @JvmOverloads constructor(context: Context, attrs: AttributeSet? = n
         backgroundBitmap?.also { canvas.drawBitmap(it, 0f, 0f, paint) }
         // 去掉或者绘制窗口区域
         windows.forEach { it.drawDelegate.draw(canvas, context.resources, paint) }
-//        for (window in windows) {
-//            paint.xfermode = window.bitmapDelegate.mode
-//            window.bitmapDelegate.bitmap.also { canvas.drawBitmap(it, window.left.toFloat(), window.top.toFloat(), paint) }
-//        }
         paint.xfermode = null
         // 应用图层
         canvas.restoreToCount(layer)
